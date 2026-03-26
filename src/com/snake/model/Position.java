@@ -12,32 +12,42 @@ public class Position {
 
 //    position constructor
     public Position(int x, int y) {
-        this.x = 0; // stub
-        this.y = 0; // stub
+        this.x = x; // stub
+        this.y = y; // stub
     }
 
 //    getters
     public int getX() {
-        return 0; // stub
+        return x; // stub
     }
 
     public int getY() {
-        return 0; // stub
+        return y; // stub
     }
 
 //    overriden methods
+    // this checks equality based on x and y coordinates
     @Override
     public boolean equals(Object o) {
-        return false; // stub
+        if (this == o)
+            return true;
+
+        if (!(o instanceof Position))
+            return false;
+
+        Position other = (Position) o;
+        return x == other.x && y == other.y;
     }
 
+    //returns hash code based equals() of  x and y
     @Override
     public int hashCode() {
-        return 0; // stub
+        return Objects.hash(x , y); // stub
     }
 
+    //this  returns a string representation in format x,y
     @Override
     public String toString() {
-        return ""; // stub
+        return "(" + x + "," + y + ")"; // stub
     }
 }
