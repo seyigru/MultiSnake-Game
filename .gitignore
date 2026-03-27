@@ -1,4 +1,5 @@
 .idea/
 *.iml
 out/
-*.jar
+*.jartarget/
+lib/*.jar
