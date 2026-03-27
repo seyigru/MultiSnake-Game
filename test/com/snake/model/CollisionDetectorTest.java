@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for CollisionDetector --- wall and self collision only for Milestone 1.
  *
- * Oluwaseyi Adeyemo
+ * Done by Oluwaseyi Adeyemo
  */
 public class CollisionDetectorTest {
 
