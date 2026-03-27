@@ -1,5 +1,6 @@
 package com.snake.model;
-//By Ekene
+// by Ekene Ochuba
+//Student no: 3155904
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

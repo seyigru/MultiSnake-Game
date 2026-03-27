@@ -1,5 +1,6 @@
 package com.snake.model;
-// by Ekene
+// by Ekene Ochuba
+//Student no: 3155904
 
 import java.util.List;
 import java.util.ArrayList;

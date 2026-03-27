@@ -11,13 +11,13 @@ import java.util.List;
  * On each move, a new head is added to the front and the tail is removed
  * unless the snake is growing.
  *
- * Done byOluwaseyi Adeyemo
+ * Done by Oluwaseyi Adeyemo
  */
 public class Snake {
 
     public static final int INITIAL_LENGTH = 3;
 
-    private final Deque<Position> body;
+    private Deque<Position> body;
     private Direction direction;
     private final PlayerType type;
     private boolean alive;
@@ -26,9 +26,9 @@ public class Snake {
     /**
      * Creates a snake of INITIAL_LENGTH at startPos facing startDir.
      *
-     * @param startPos  the starting head position
-     * @param startDir  the starting direction
-     * @param type      which player this snake belongs to
+     * @param startPos the starting head position
+     * @param startDir the starting direction
+     * @param type which player this snake belongs to
      */
     public Snake(Position startPos, Direction startDir, PlayerType type) {
         this.body = new ArrayDeque<>();
@@ -41,13 +41,15 @@ public class Snake {
 
     /**
      * Builds the initial body of INITIAL_LENGTH segments behind the start position.
+     *
+     * @param startPos the head position
+     * @param startDir the direction the snake is facing
      */
     private void initialiseBody(Position startPos, Direction startDir) {
         body.clear();
         body.addFirst(startPos);
         for (int i = 1; i < INITIAL_LENGTH; i++) {
             Position prev = body.peekLast();
-            // each segment is one step behind the previous in the opposite direction
             body.addLast(new Position(
                 prev.getX() - startDir.getDx(),
                 prev.getY() - startDir.getDy()
@@ -57,7 +59,7 @@ public class Snake {
 
     /**
      * Moves the snake one step in the current direction.
-     * If growing, the tail is not removed.
+     * If the snake is growing, the tail is not removed.
      */
     public void move() {
         Position newHead = direction.next(body.peekFirst());
@@ -142,13 +144,14 @@ public class Snake {
     /**
      * Resets the snake to its initial state at the given position and direction.
      *
-     * @param startPos  the new starting head position
-     * @param startDir  the new starting direction
+     * @param startPos the new starting head position
+     * @param startDir the new starting direction
      */
     public void reset(Position startPos, Direction startDir) {
         this.direction = startDir;
         this.alive = true;
         this.growing = false;
+        this.body = new ArrayDeque<>();
         initialiseBody(startPos, startDir);
     }
 

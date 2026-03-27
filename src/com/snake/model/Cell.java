@@ -1,5 +1,6 @@
 package com.snake.model;
-//By Ekene
+// by Ekene Ochuba
+//Student no: 3155904
 
 // this represents a single cell on the game board
 public class Cell {

@@ -1,5 +1,6 @@
 package com.snake.model;
-//By Ekene
+// by Ekene Ochuba
+//Student no: 3155904
 
 // the four possible states a cell on the board can be in
 public enum CellState {
