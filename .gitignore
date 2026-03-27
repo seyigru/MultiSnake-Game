@@ -3,3 +3,4 @@
 out/
 *.jartarget/
 lib/*.jar
+.class
