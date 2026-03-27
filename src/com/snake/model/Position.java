@@ -1,22 +1,23 @@
 package com.snake.model;
 import java.util.Objects;
+//By Ekene
 
 //This represents a coordinate position on the game board.
 // By Ekene
 
 public class Position {
 
-//    variables for x and y
+    //    variables for x and y
     private final int x;
     private final int y;
 
-//    position constructor
+    //    position constructor
     public Position(int x, int y) {
         this.x = x; // stub
         this.y = y; // stub
     }
 
-//    getters
+    //    getters
     public int getX() {
         return x; // stub
     }
@@ -25,7 +26,7 @@ public class Position {
         return y; // stub
     }
 
-//    overriden methods
+    //    overriden methods
     // this checks equality based on x and y coordinates
     @Override
     public boolean equals(Object o) {
