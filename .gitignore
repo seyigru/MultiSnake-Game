@@ -1,4 +1,15 @@
 .idea/
 *.iml
+
+*.class
+bin/
 out/
-*.jar
+target/
+
+.DS_Store
+.classpath
+.project
+.settings/
+
+lib/*.jar
+.class
