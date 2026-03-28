@@ -19,14 +19,14 @@ public class FoodTest {
         food = new Food(board);
     }
 
-    // food should spawn somewhere on the board
+    // food should spawn somewhere on the board, so it should not be null
     @Test
     void foodSpawnsOnBoard() {
         food.spawn();
         assertNotNull(food.getPosition());
     }
 
-    // food should only spawn on an empty cell
+    // food state should be FOOD when it spawns on an empty cell
     @Test
     void foodSpawnsOnEmptyCell() {
         food.spawn();
@@ -36,7 +36,7 @@ public class FoodTest {
 
     // snake head on food position means that food is eaten
     @Test
-    void foodIsEatenWhenHeadMatches() {
+    void foodEatenWhenHeadMatches() {
         food.spawn();
         Position pos = food.getPosition();
         assertTrue(food.isEaten(pos));
