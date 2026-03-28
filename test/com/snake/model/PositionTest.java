@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 // This is the test for Position.
-// By Ekene
 
 public class PositionTest {
 
-//    two postions with the same coords should be equal
+    //    constructor should store x and y correctly
+
     @Test
     void testConstructorSetsXAndY() {
         Position p = new Position(3, 5);
@@ -19,7 +19,8 @@ public class PositionTest {
         assertEquals(5, p.getY());
     }
 
-//    different coordinates should not be equal
+    //    zero coordinates should work
+
     @Test
     void testGetXAndGetY() {
         Position p = new Position(0, 0);
@@ -27,7 +28,7 @@ public class PositionTest {
         assertEquals(0, p.getY());
     }
 
-//    constructor should store x and y correctly
+    //    two postions with the same coords should be equal
     @Test
     void testEqualsReturnsTrueForSameCoords() {
         Position p1 = new Position(2, 4);
@@ -35,7 +36,7 @@ public class PositionTest {
         assertEquals(p1, p2);
     }
 
-//    zero coordinates should work
+    //    different coordinates should not be equal
     @Test
     void testEqualsReturnsFalseForDifferentCoords() {
         Position p1 = new Position(1, 2);

@@ -3,8 +3,7 @@ import java.util.Objects;
 // by Ekene Ochuba
 //Student no: 3155904
 
-//This represents a coordinate position on the game board.
-// By Ekene
+// This represents a coordinate position on the game board.
 
 public class Position {
 
