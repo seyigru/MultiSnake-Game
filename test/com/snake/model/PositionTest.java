@@ -7,21 +7,18 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 // This is the test for Position.
-
 public class PositionTest {
-
     //    constructor should store x and y correctly
     @Test
-    void testConstructorSetsXAndY() {
+    void constructorStoresCoordinates() {
         Position p = new Position(3, 5);
         assertEquals(3, p.getX());
         assertEquals(5, p.getY());
     }
 
     //    zero coordinates should work
-
     @Test
-    void testGetXAndGetY() {
+    void zeroCoordinatesWork() {
         Position p = new Position(0, 0);
         assertEquals(0, p.getX());
         assertEquals(0, p.getY());
@@ -29,7 +26,7 @@ public class PositionTest {
 
     //    two postions with the same coords should be equal
     @Test
-    void testEqualsReturnsTrueForSameCoords() {
+    void sameCoordinatesAreEqual() {
         Position p1 = new Position(2, 4);
         Position p2 = new Position(2, 4);
         assertEquals(p1, p2);
@@ -37,7 +34,7 @@ public class PositionTest {
 
     //   different coordinates should not be equal
     @Test
-    void testEqualsReturnsFalseForDifferentCoords() {
+    void differentCoordinatesNotEqual() {
         Position p1 = new Position(1, 2);
         Position p2 = new Position(3, 4);
         assertNotEquals(p1, p2);
@@ -45,7 +42,7 @@ public class PositionTest {
 
 //    equal postions must have equal hash codes
     @Test
-    void testHashCodeConsistentWithEquals() {
+    void equalPositionsSameHashCode() {
         Position p1 = new Position(2, 4);
         Position p2 = new Position(2, 4);
         assertEquals(p1.hashCode(), p2.hashCode());
@@ -53,7 +50,7 @@ public class PositionTest {
 
 //    toString should return in x, y format
     @Test
-    void testToStringFormat() {
+    void toStringFormat() {
         Position p = new Position(3, 5);
         assertEquals("(3,5)", p.toString());
     }
