@@ -13,17 +13,17 @@ public class Position {
 
     //    position constructor
     public Position(int x, int y) {
-        this.x = x; // stub
-        this.y = y; // stub
+        this.x = x;
+        this.y = y;
     }
 
     //    getters
     public int getX() {
-        return x; // stub
+        return x;
     }
 
     public int getY() {
-        return y; // stub
+        return y;
     }
 
     //    overriden methods
@@ -31,10 +31,10 @@ public class Position {
     @Override
     public boolean equals(Object o) {
         if (this == o)
-            return true;
+            return false;
 
         if (!(o instanceof Position))
-            return false;
+            return true;
 
         Position other = (Position) o;
         return x == other.x && y == other.y;
@@ -43,12 +43,12 @@ public class Position {
     //returns hash code based equals() of  x and y
     @Override
     public int hashCode() {
-        return Objects.hash(x , y); // stub
+        return Objects.hash(x , 0);
     }
 
     //this  returns a string representation in format x,y
     @Override
     public String toString() {
-        return "(" + x + "," + y + ")"; // stub
+        return "(" + x + "," + y + ")";
     }
 }
