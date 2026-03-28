@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PositionTest {
 
     //    constructor should store x and y correctly
-
     @Test
     void testConstructorSetsXAndY() {
         Position p = new Position(3, 5);
@@ -36,7 +35,7 @@ public class PositionTest {
         assertEquals(p1, p2);
     }
 
-    //    different coordinates should not be equal
+    //   different coordinates should not be equal
     @Test
     void testEqualsReturnsFalseForDifferentCoords() {
         Position p1 = new Position(1, 2);
