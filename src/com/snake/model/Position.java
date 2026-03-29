@@ -30,11 +30,13 @@ public class Position {
     // this checks equality based on x and y coordinates
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return false;
-
-        if (!(o instanceof Position))
+        if (this == o) {
             return true;
+        }
+
+        if (!(o instanceof Position)) {
+            return false;
+        }
 
         Position other = (Position) o;
         return x == other.x && y == other.y;
@@ -43,7 +45,7 @@ public class Position {
     //returns hash code based equals() of  x and y
     @Override
     public int hashCode() {
-        return Objects.hash(x , 0);
+        return Objects.hash(x, y);
     }
 
     //this  returns a string representation in format x,y
