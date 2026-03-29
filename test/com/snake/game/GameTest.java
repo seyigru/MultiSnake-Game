@@ -103,4 +103,17 @@ public class GameTest {
         game.tick();
         assertTrue(game.getIntervalMs() < intervalBefore);
     }
+
+    /**
+     * Check that timer interval drops by 2 ms after one food eat (150 → 148).
+     */
+    @Test
+    void testGetIntervalMsDecreasesAfterFoodEaten() {
+        Position foodPos = new Position(6, 5);
+        Game game = new Game(board, player1, player2, foodPos);
+        game.start();
+        assertEquals(150, game.getIntervalMs());
+        game.tick();
+        assertEquals(148, game.getIntervalMs());
+    }
 }
