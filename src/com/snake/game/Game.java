@@ -78,6 +78,13 @@ public class Game {
         return intervalMs;
     }
 
+    /**
+     * Current food cell, for rendering (may be null before first spawn).
+     */
+    public Position getFoodPosition() {
+        return food.getPosition();
+    }
+
     public void start() {
         if (state.isGameOver()) {
             return;
