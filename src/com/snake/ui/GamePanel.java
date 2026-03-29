@@ -2,6 +2,9 @@ package com.snake.ui;
 
 // By Israel Kayode
 // Student Number: 3167486
+//
+// Swing renderer for the game. All drawing is based on reading the current game objects
+// (snakes, food, state). I avoided putting logic here so the Game class stays testable.
 
 import com.snake.game.Game;
 import com.snake.game.GameState;
@@ -19,14 +22,12 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.List;
 
-/**
- * Renders the board, snakes, food, HUD, and phase overlays. Owns the game tick {@link Timer}.
- */
 public class GamePanel extends JPanel {
 
     public static final int CELL_PX = 30;
     public static final int GRID_CELLS = 20;
     public static final int HUD_HEIGHT = 40;
+    // Board is 20x20; each cell is 30px so play area is 600x600 (plus HUD).
 
     private final Game game;
     private Timer timer;
@@ -48,6 +49,7 @@ public class GamePanel extends JPanel {
      * Starts the tick timer (call after {@link Game#start()}).
      */
     public void startOrResumeTimer() {
+        // Timer delay changes as the game speeds up, so we re-read getIntervalMs() every tick.
         if (timer != null) {
             timer.stop();
         }
@@ -79,6 +81,7 @@ public class GamePanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+        // Draw HUD first, then translate so (0,0) is the top-left of the grid.
         drawHud(g2);
         g2.translate(0, HUD_HEIGHT);
         drawGridBackground(g2);
@@ -88,6 +91,7 @@ public class GamePanel extends JPanel {
         drawGridLines(g2);
         g2.translate(0, -HUD_HEIGHT);
 
+        // Overlays (start/pause/game over) are drawn last so they sit on top.
         drawOverlay(g2);
         g2.dispose();
     }

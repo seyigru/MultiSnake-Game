@@ -2,6 +2,8 @@ package com.snake.ui;
 
 // By Israel Kayode
 // Student Number: 3167486
+//
+// Entry point kept small on purpose: just wires up the engine + UI and launches Swing.
 
 import com.snake.game.Game;
 import com.snake.game.Player;

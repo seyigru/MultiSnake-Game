@@ -2,6 +2,9 @@ package com.snake.game;
 
 // By Israel Kayode
 // Student Number: 3167486
+//
+// Game is kept as a plain Java class (not a JPanel) so the logic stays unit-testable.
+// Swing rendering/timers live in the UI package and call into this controller.
 
 import com.snake.model.CollisionDetector;
 import com.snake.model.Direction;
@@ -14,14 +17,12 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Main game controller: state, ticks, input, scoring, and timer interval.
- */
 public class Game {
 
     private static final int INITIAL_INTERVAL_MS = 150;
     private static final int INTERVAL_STEP_MS = 2;
     private static final int MIN_INTERVAL_MS = 60;
+    // Speed rule: start at 150ms, reduce by 2ms per food, minimum 60ms.
 
     private final GameBoard board;
     private final Player player1;
@@ -78,10 +79,8 @@ public class Game {
         return intervalMs;
     }
 
-    /**
-     * Current food cell, for rendering (may be null before first spawn).
-     */
     public Position getFoodPosition() {
+        // Used by the GamePanel renderer.
         return food.getPosition();
     }
 
@@ -89,10 +88,12 @@ public class Game {
         if (state.isGameOver()) {
             return;
         }
+        // ENTER moves START → PLAYING.
         state.setPhase(GameState.Phase.PLAYING);
     }
 
     public void pause() {
+        // P key toggles PLAYING ↔ PAUSED.
         if (state.isPlaying()) {
             state.setPhase(GameState.Phase.PAUSED);
         } else if (state.isPaused()) {
@@ -101,6 +102,7 @@ public class Game {
     }
 
     public void reset() {
+        // Reset round-level state; snake bodies/scores are reset by caller (UI) for now.
         state.reset();
         winner = null;
         intervalMs = INITIAL_INTERVAL_MS;
@@ -109,6 +111,7 @@ public class Game {
     }
 
     public void tick() {
+        // Only advance the simulation during PLAYING.
         if (!state.isPlaying()) {
             return;
         }
@@ -118,6 +121,7 @@ public class Game {
             return;
         }
 
+        // Move both snakes once per tick, then check collisions.
         s1.move();
         s2.move();
         collisionDetector.runAllChecks(s1, s2);
@@ -132,6 +136,7 @@ public class Game {
     }
 
     public void handleInput(int keyCode) {
+        // Input is ignored unless we are currently playing (keeps tests predictable).
         if (!state.isPlaying()) {
             return;
         }
