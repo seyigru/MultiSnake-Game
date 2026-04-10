@@ -10,6 +10,7 @@ import com.snake.model.CollisionDetector;
 import com.snake.model.Direction;
 import com.snake.model.Food;
 import com.snake.model.GameBoard;
+import com.snake.model.GameMode;
 import com.snake.model.Position;
 import com.snake.model.Snake;
 
@@ -38,7 +39,7 @@ public class Game {
         this.player1 = player1;
         this.player2 = player2;
         this.state = new GameState();
-        this.collisionDetector = new CollisionDetector(board);
+        this.collisionDetector = new new CollisionDetector(board, GameMode.CLASSIC);
         this.food = new Food(board, spawnFoodPosition());
         this.intervalMs = INITIAL_INTERVAL_MS;
         this.winner = null;
