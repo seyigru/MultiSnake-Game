@@ -2,13 +2,13 @@ package com.snake.model;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 //By Ekene Ochuba - 3155904
 
-// Tracks top scores from completed games
+// Tracks and sorts top scores from completed games
 public class Leaderboard {
-
-    // Holds a single score entry with name, score and difficulty
+    // A single score entry
     public static class Entry {
         public final String name;
         public final int score;
@@ -23,28 +23,29 @@ public class Leaderboard {
 
     private final List<Entry> entries;
 
-    // Starts with no entries
+    // Starts empty - entries are added as games finish
     public Leaderboard() {
-        this.entries = new ArrayList<>(); // stub
+        this.entries = new ArrayList<>();
     }
 
-    // Should add and sort entry - stub does nothing
+    // Adds a new score and keeps the list sorted highest first
     public void addEntry(String name, int score, String difficulty) {
-        // stub
+        entries.add(new Entry(name, score, difficulty));
+        entries.sort(Comparator.comparingInt((Entry e) -> e.score).reversed());
     }
 
-    // Should return top n - stub returns empty
+    // Returns the top n scores
     public List<Entry> getTopEntries(int n) {
-        return new ArrayList<>(); // stub
+        return new ArrayList<>(entries.subList(0, Math.min(n, entries.size())));
     }
 
-    // Should wipe all entries - stub does nothing
+    // Wipes all scores - useful for testing or resetting
     public void clear() {
-        // stub
+        entries.clear();
     }
 
-    // Should return full list - stub returns empty
+    // Returns the complete list of entries
     public List<Entry> getEntries() {
-        return new ArrayList<>(); // stub
+        return new ArrayList<>(entries);
     }
 }
