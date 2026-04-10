@@ -6,6 +6,10 @@ package com.snake.game;
 // Game is kept as a plain Java class (not a JPanel) so the logic stays unit-testable.
 // Swing rendering/timers live in the UI package and call into this controller.
 
+import java.awt.event.KeyEvent;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.snake.model.CollisionDetector;
 import com.snake.model.Direction;
 import com.snake.model.Food;
@@ -13,10 +17,6 @@ import com.snake.model.GameBoard;
 import com.snake.model.GameMode;
 import com.snake.model.Position;
 import com.snake.model.Snake;
-
-import java.awt.event.KeyEvent;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Game {
 
@@ -39,7 +39,7 @@ public class Game {
         this.player1 = player1;
         this.player2 = player2;
         this.state = new GameState();
-        this.collisionDetector = new new CollisionDetector(board, GameMode.CLASSIC);
+        this.collisionDetector = new CollisionDetector(board, GameMode.CLASSIC);
         this.food = new Food(board, spawnFoodPosition());
         this.intervalMs = INITIAL_INTERVAL_MS;
         this.winner = null;
@@ -50,7 +50,7 @@ public class Game {
         this.player1 = player1;
         this.player2 = player2;
         this.state = new GameState();
-        this.collisionDetector = new CollisionDetector(board);
+        this.collisionDetector = new CollisionDetector(board, GameMode.CLASSIC);
         this.food = new Food(board, initialFood);
         this.intervalMs = INITIAL_INTERVAL_MS;
         this.winner = null;
