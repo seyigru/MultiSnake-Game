@@ -50,4 +50,48 @@ public class FoodTest {
         food.spawn();
         assertNotNull(food.getPosition());
     }
+
+    // multiple food items should all spawn on the board
+    @Test
+    void multipleFoodItemsSpawn() {
+        Food multiFood = new Food(board, 3);
+        multiFood.spawnAll();
+        assertEquals(3, multiFood.getPositions().size());
+    }
+
+    // food should never spawn on an occupied cell
+    @Test
+    void foodDoesNotSpawnOnOccupiedCell() {
+        board.setCellState(new Position(0, 0), CellState.SNAKE_P1);
+        Food f = new Food(board, 1);
+        f.spawnAll();
+        assertNotEquals(new Position(0, 0), f.getPositions().get(0));
+    }
+
+    // isEaten should detect any food position not just the first one
+    @Test
+    void isEatenDetectsAnyFoodPosition() {
+        Food multiFood = new Food(board, 3);
+        multiFood.spawnAll();
+        Position anyFood = multiFood.getPositions().get(1);
+        assertTrue(multiFood.isEaten(anyFood));
+    }
+
+    // removing eaten food should spawn a replacement keeping count the same
+    @Test
+    void removeEatenRespawnsFood() {
+        Food multiFood = new Food(board, 2);
+        multiFood.spawnAll();
+        Position eaten = multiFood.getPositions().get(0);
+        multiFood.removeEaten(eaten);
+        assertEquals(2, multiFood.getPositions().size());
+    }
+
+    // getPositions should return all active food items
+    @Test
+    void getPositionsReturnsAllActive() {
+        Food multiFood = new Food(board, 5);
+        multiFood.spawnAll();
+        assertEquals(5, multiFood.getPositions().size());
+    }
 }
