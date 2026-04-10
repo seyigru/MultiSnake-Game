@@ -20,8 +20,8 @@ public class GameBoardTest {
     // brand new board should have every cell empty
     @Test
     void newBoardCellsEmpty() {
-        for (int x = 0; x < GameBoard.SIZE; x++) {
-            for (int y = 0; y < GameBoard.SIZE; y++) {
+        for (int x = 0; x < GameBoard.DEFAULT_SIZE; x++) {
+            for (int y = 0; y < GameBoard.DEFAULT_SIZE; y++) {
                 assertTrue(board.getCell(new Position(x, y)).isEmpty());
             }
         }
@@ -52,8 +52,8 @@ public class GameBoardTest {
     // coordinates equal to or beyond SIZE are out of bounds
     @Test
     void oversizePositionOutOfBounds() {
-        assertFalse(board.isInBounds(new Position(20, 0)));
-        assertFalse(board.isInBounds(new Position(0, 20)));
+        assertFalse(board.isInBounds(new Position(GameBoard.DEFAULT_SIZE, 0)));
+        assertFalse(board.isInBounds(new Position(0, GameBoard.DEFAULT_SIZE)));
     }
 
     // empty cell should not be occupied
@@ -77,5 +77,43 @@ public class GameBoardTest {
         board.setCellState(new Position(0, 0), CellState.FOOD);
         int after = board.getEmptyCells().size();
         assertEquals(before - 1, after);
+    }
+
+    // easy difficulty should give a 20x20 board
+    @Test
+    void boardSizeCorrectForEasy() {
+        GameBoard easy = new GameBoard(20);
+        assertEquals(20, easy.getSize());
+    }
+
+    // medium difficulty should give a 30x30 board
+    @Test
+    void boardSizeCorrectForMedium() {
+        GameBoard medium = new GameBoard(30);
+        assertEquals(30, medium.getSize());
+    }
+
+    // hard difficulty should give a 40x40 board
+    @Test
+    void boardSizeCorrectForHard() {
+        GameBoard hard = new GameBoard(40);
+        assertEquals(40, hard.getSize());
+    }
+
+    // isInBounds should respect the actual board size not a hardcoded 20
+    @Test
+    void isInBoundsUsesCorrectSize() {
+        GameBoard medium = new GameBoard(30);
+        assertTrue(medium.isInBounds(new Position(29, 29)));
+        assertFalse(medium.isInBounds(new Position(30, 0)));
+    }
+
+    // reset should clear all cells even on a large board
+    @Test
+    void resetClearsAllCellsForLargeBoard() {
+        GameBoard hard = new GameBoard(40);
+        hard.setCellState(new Position(35, 35), CellState.FOOD);
+        hard.reset();
+        assertTrue(hard.getCell(new Position(35, 35)).isEmpty());
     }
 }
