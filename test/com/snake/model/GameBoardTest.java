@@ -99,7 +99,6 @@ public class GameBoardTest {
         GameBoard hard = new GameBoard(40);
         assertEquals(40, hard.getSize());
     }
-
     // isInBounds should respect the actual board size not a hardcoded 20
     @Test
     void isInBoundsUsesCorrectSize() {
