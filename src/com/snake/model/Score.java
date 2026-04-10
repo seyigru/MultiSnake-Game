@@ -27,29 +27,31 @@ public class Score {
      * @param points the number of points to add
      */
     public void addPoints(int points) {
+        this.score += points;
     }
 
     /**
      * Returns the current score.
      *
-     * @return the score
+     * @return the current score
      */
     public int getScore() {
-        return 0;
+        return score;
     }
 
     /**
      * Resets the score back to 0.
      */
     public void reset() {
+        this.score = 0;
     }
 
     /**
      * Returns which player this score belongs to.
      *
-     * @return the PlayerType
+     * @return the player type
      */
     public PlayerType getPlayerType() {
-        return null;
+        return playerType;
     }
 }
