@@ -4,31 +4,37 @@ import java.util.List;
 
 /**
  * Responsible for all collision checking in the game.
- * Checks wall collisions, self collisions, and snake-vs-snake collisions.
+ * Checks wall collisions, self collisions, snake-vs-snake collisions,
+ * and head-on-head collisions. Behaviour varies by GameMode.
  * Does not move anything --- only checks and calls kill() on affected snakes.
  *
- * Done by Oluwaseyi Adeyemo
+ * Oluwaseyi Adeyemo
  */
 public class CollisionDetector {
 
     private final GameBoard board;
+    private final GameMode gameMode;
 
     /**
-     * Creates a CollisionDetector with a reference to the game board.
+     * Creates a CollisionDetector with a reference to the game board and game mode.
      *
-     * @param board the game board used for boundary checking
+     * @param board    the game board used for boundary checking
+     * @param gameMode the current game mode (CLASSIC or VERSUS)
      */
-    public CollisionDetector(GameBoard board) {
+    public CollisionDetector(GameBoard board, GameMode gameMode) {
         this.board = board;
+        this.gameMode = gameMode;
     }
 
     /**
      * Returns true if the snake's head is outside the board bounds.
+     * Always returns false in VERSUS mode because the snake wraps instead.
      *
      * @param snake the snake to check
-     * @return true if the head is out of bounds
+     * @return true if the head is out of bounds in CLASSIC mode
      */
     public boolean checkWallCollision(Snake snake) {
+        if (gameMode == GameMode.VERSUS) return false;
         return !board.isInBounds(snake.getHead());
     }
 
@@ -49,38 +55,54 @@ public class CollisionDetector {
     }
 
     /**
-     * Returns true if s1's head is in s2's body or s2's head is in s1's body.
-     * Snake-vs-snake collision --- implemented in Milestone 2.
+     * Returns true if s1's head is inside s2's body or s2's head is inside s1's body.
+     * The head positions are skipped to avoid overlapping with checkHeadOnHead.
      *
      * @param s1 first snake
      * @param s2 second snake
-     * @return true if a snake collision is detected
+     * @return true if a snake-vs-snake collision is detected
      */
     public boolean checkSnakeCollision(Snake s1, Snake s2) {
+        Position head1 = s1.getHead();
+        Position head2 = s2.getHead();
+        List<Position> body1 = s1.getBody();
+        List<Position> body2 = s2.getBody();
+
+        for (int i = 1; i < body2.size(); i++) {
+            if (head1.equals(body2.get(i))) return true;
+        }
+        for (int i = 1; i < body1.size(); i++) {
+            if (head2.equals(body1.get(i))) return true;
+        }
         return false;
     }
 
     /**
      * Returns true if both snakes' heads occupy the same cell.
-     * Implemented in Milestone 2.
      *
      * @param s1 first snake
      * @param s2 second snake
      * @return true if head-on-head collision detected
      */
     public boolean checkHeadOnHead(Snake s1, Snake s2) {
-        return false;
+        return s1.getHead().equals(s2.getHead());
     }
 
     /**
-     * Runs all collision checks and calls kill() on any snake that has collided.
-     * Snake-vs-snake checks completed in Milestone 2.
+     * Runs all four collision checks and calls kill() on any snake that has collided.
+     * Head-on-head is checked first --- if both heads meet, both snakes die and
+     * no further checks are needed.
      *
      * @param s1 first snake
      * @param s2 second snake
      */
     public void runAllChecks(Snake s1, Snake s2) {
-        if (checkWallCollision(s1) || checkSelfCollision(s1)) s1.kill();
-        if (checkWallCollision(s2) || checkSelfCollision(s2)) s2.kill();
+        if (checkHeadOnHead(s1, s2)) {
+            s1.kill();
+            s2.kill();
+            return;
+        }
+        if (checkWallCollision(s1) || checkSelfCollision(s1) || checkSnakeCollision(s1, s2)) s1.kill();
+        if (checkWallCollision(s2) || checkSelfCollision(s2) || checkSnakeCollision(s1, s2)) s2.kill();
     }
 }
