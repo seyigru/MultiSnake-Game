@@ -15,14 +15,41 @@ public class DifficultySettings {
     }
 
     private final Level level;
+    private final int boardSize;
+    private final int speedMs;
+    private final int foodCount;
 
     /**
      * Constructs a DifficultySettings for the given level.
+     * Easy is 20x20, 150ms, 1 food.
+     * Medium is 30x30, 100ms, 2 foods.
+     * Hard is 40x40, 60ms, 3 foods.
      *
      * @param level the difficulty level
      */
     public DifficultySettings(Level level) {
         this.level = level;
+        switch (level) {
+            case EASY:
+                this.boardSize = 20;
+                this.speedMs = 150;
+                this.foodCount = 1;
+                break;
+            case MEDIUM:
+                this.boardSize = 30;
+                this.speedMs = 100;
+                this.foodCount = 2;
+                break;
+            case HARD:
+                this.boardSize = 40;
+                this.speedMs = 60;
+                this.foodCount = 3;
+                break;
+            default:
+                this.boardSize = 20;
+                this.speedMs = 150;
+                this.foodCount = 1;
+        }
     }
 
     /**
@@ -31,7 +58,7 @@ public class DifficultySettings {
      * @return the board size (width and height)
      */
     public int getBoardSize() {
-        return 0;
+        return boardSize;
     }
 
     /**
@@ -40,7 +67,7 @@ public class DifficultySettings {
      * @return the speed in milliseconds
      */
     public int getSpeedMs() {
-        return 0;
+        return speedMs;
     }
 
     /**
@@ -49,7 +76,7 @@ public class DifficultySettings {
      * @return the food count
      */
     public int getFoodCount() {
-        return 0;
+        return foodCount;
     }
 
     /**
@@ -58,6 +85,6 @@ public class DifficultySettings {
      * @return the level enum value
      */
     public Level getLevel() {
-        return null;
+        return level;
     }
 }
