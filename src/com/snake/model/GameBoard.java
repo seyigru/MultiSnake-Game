@@ -5,17 +5,25 @@ package com.snake.model;
 import java.util.List;
 import java.util.ArrayList;
 
-// manages the 20x20 grid of cells that makes up the game board
+// manages the 20x20 grid of cells that makes up the game board, now supports dynamic sizing for difficulty levels
 public class GameBoard {
 
-    public static final int SIZE = 20;
+    public static final int DEFAULT_SIZE = 20;
+    private final int size;
     private final Cell[][] grid;
 
-    // sets up the grid with all cels as an empty state
+    // default constructor, keeps 20x20 for backwards compatibility
     public GameBoard() {
-        grid = new Cell[SIZE][SIZE]; // get cell size
-        for (int x = 0; x < SIZE; x++)
-            for (int y = 0; y < SIZE; y++)
+        this(DEFAULT_SIZE);
+    }
+
+    // constructor, accepts size from difficulty settings
+    // Easy = 20, Medium = 30, Hard = 40
+    public GameBoard(int size) {
+        this.size = size;
+        grid = new Cell[size][size]; // get cell size
+        for (int x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
                 grid[x][y] = new Cell();
     }
 
@@ -29,10 +37,10 @@ public class GameBoard {
         grid[p.getX()][p.getY()].setState(state);
     }
 
-    // check if position is on the board
+    // check if position is on the board, uses dynamic size now
     public boolean isInBounds(Position p) {
-        return p.getX() >= 0 && p.getX() < SIZE
-                && p.getY() >= 0 && p.getY() < SIZE;
+        return p.getX() >= 0 && p.getX() < size
+                && p.getY() >= 0 && p.getY() < size;
     }
 
     // check if a cell has something on it
@@ -40,25 +48,25 @@ public class GameBoard {
         return !grid[p.getX()][p.getY()].isEmpty();
     }
 
-    // return all empty cells
+    // return all empty cells, used by food to find valid spawn positions
     public List<Position> getEmptyCells() {
         List<Position> empty = new ArrayList<>();
-        for (int x = 0; x < SIZE; x++)
-            for (int y = 0; y < SIZE; y++)
+        for (int x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
                 if (grid[x][y].isEmpty())
                     empty.add(new Position(x, y));
         return empty;
     }
 
-    // reset all cells to empty , used when starting a new game
+    // wipes everything back to empty, works for all board sizes
     public void reset() {
-        for (int x = 0; x < SIZE; x++)
-            for (int y = 0; y < SIZE; y++)
+        for (int x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
                 grid[x][y].setState(CellState.EMPTY);
     }
 
     // returns the board size constant
     public int getSize() {
-        return SIZE;
+        return size;
     }
 }
