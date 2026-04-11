@@ -17,6 +17,7 @@ import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -45,7 +46,8 @@ public class GamePanel extends JPanel {
         setFocusable(true);
     }
 
-    /** Width/height of the grid in cells 
+    /** Width/height of the grid in cells — matches Person 1 {@code GameBoard} size (20 / 30 / 40). */
+    private int gridCells() {
         return game.getBoard().getSize();
     }
 
@@ -58,7 +60,7 @@ public class GamePanel extends JPanel {
     }
 
     /**
-     * Starts the tick timer (call after {@link Game#start()}).
+     * Starts the tick timer 
      */
     public void startOrResumeTimer() {
         // Timer delay changes as the game speeds up, so we re-read getIntervalMs() every tick.
@@ -105,7 +107,12 @@ public class GamePanel extends JPanel {
         drawGridLines(g2, n);
         g2.translate(0, -HUD_HEIGHT);
 
-        // Overlays (start/pause/game over) are drawn last so they sit on top.
+        // Pause tint sits only on the playfield so scores in the HUD stay readable (Milestone 2 spec).
+        if (game.getState().isPaused()) {
+            drawPauseOverlayOverGrid(g2, n);
+        }
+
+        // Start / game-over still dim the whole window; paused uses the grid-only overlay above.
         drawOverlay(g2);
         g2.dispose();
     }
@@ -178,13 +185,31 @@ public class GamePanel extends JPanel {
         g2.fillOval(x + 2, y + 2, CELL_PX - 4, CELL_PX - 4);
     }
 
-    // Draws the overlay
+    /**
+     * Semi-transparent grey over the cells only (not the HUD). Text is centred in that rectangle
+     * so it reads as “the game is frozen here” while P1/P2 scores stay visible above.
+     */
+    private void drawPauseOverlayOverGrid(Graphics2D g2, int n) {
+        int gridPixelH = CELL_PX * n;
+
+        g2.setColor(new Color(90, 90, 90, 175));
+        g2.fillRect(0, HUD_HEIGHT, getWidth(), gridPixelH);
+
+        String text = "PAUSED — Press P to resume";
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 22));
+        FontMetrics fm = g2.getFontMetrics();
+        int tw = fm.stringWidth(text);
+        int cx = (getWidth() - tw) / 2;
+        int cy = HUD_HEIGHT + (gridPixelH + fm.getAscent() - fm.getDescent()) / 2;
+        g2.drawString(text, cx, cy);
+    }
+
+    // Draws full-panel overlays for start and game over (pause handled separately on the grid).
     private void drawOverlay(Graphics2D g2) {
         GameState.Phase phase = game.getState().getPhase();
         if (phase == GameState.Phase.START) {
             drawCenteredBanner(g2, "Press ENTER to start");
-        } else if (phase == GameState.Phase.PAUSED) {
-            drawCenteredBanner(g2, "PAUSED — Press P to resume");
         } else if (phase == GameState.Phase.GAME_OVER) {
             Player w = game.getWinner();
             String line = (w == null) ? "Draw — Press R to restart" : w.getName() + " wins — Press R to restart";
