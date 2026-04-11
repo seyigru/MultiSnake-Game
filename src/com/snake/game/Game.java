@@ -102,15 +102,18 @@ public class Game {
         }
     }
 
-   
     public void resume() {
+        if (state.isPaused()) {
+            state.setPhase(GameState.Phase.PLAYING);
+        }
     }
 
     public void reset() {
-        // Reset round-level state; snake bodies/scores are reset by caller (UI) for now.
         state.reset();
         winner = null;
         intervalMs = INITIAL_INTERVAL_MS;
+        player1.reset();
+        player2.reset();
         board.reset();
         food.setPosition(spawnFoodPosition());
     }
