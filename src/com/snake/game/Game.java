@@ -3,8 +3,6 @@ package com.snake.game;
 // By Israel Kayode
 // Student Number: 3167486
 //
-// Game is kept as a plain Java class (not a JPanel) so the logic stays unit-testable.
-// Swing rendering/timers live in the UI package and call into this controller.
 
 import java.awt.event.KeyEvent;
 import java.util.List;
@@ -23,7 +21,8 @@ public class Game {
     private static final int INITIAL_INTERVAL_MS = 150;
     private static final int INTERVAL_STEP_MS = 2;
     private static final int MIN_INTERVAL_MS = 60;
-    // Speed rule: start at 150ms, reduce by 2ms per food, minimum 60ms.
+    // Speed rule for milestone 1: each food speeds the game a little (shorter delay),
+    // but we never go faster than MIN_INTERVAL_MS so it stays playable.
 
     private final GameBoard board;
     private final Player player1;
@@ -31,7 +30,9 @@ public class Game {
     private final GameState state;
     private final CollisionDetector collisionDetector;
     private Food food;
+    /** Milliseconds between tick() calls when the Swing timer fires; shrinks when food is eaten. */
     private int intervalMs;
+    /** Set when someone dies; null means draw if both died the same tick. */
     private Player winner;
 
     public Game(GameBoard board, Player player1, Player player2) {
@@ -86,15 +87,14 @@ public class Game {
     }
 
     public void start() {
+        // Once the match ended, we should not silently restart from START without reset()
         if (state.isGameOver()) {
             return;
         }
-        // ENTER moves START → PLAYING.
         state.setPhase(GameState.Phase.PLAYING);
     }
 
     public void pause() {
-        // P key toggles PLAYING ↔ PAUSED.
         if (state.isPlaying()) {
             state.setPhase(GameState.Phase.PAUSED);
         } else if (state.isPaused()) {
@@ -129,7 +129,7 @@ public class Game {
             return;
         }
 
-        // Move both snakes once per tick, then check collisions.
+        // One simulation step: both move, then we ask CollisionDetector who died.
         s1.move();
         s2.move();
         collisionDetector.runAllChecks(s1, s2);
@@ -175,6 +175,11 @@ public class Game {
         }
     }
 
+    /**
+     * After collisions run, figure out who won. Milestone 2 rule: if both snakes are dead on the
+     * same tick (head-on-head, double wall, etc.) that is a draw — winner stays null.
+     * Otherwise the surviving player is the winner and we flip to GAME_OVER for the UI.
+     */
     private void resolveGameOver(Snake s1, Snake s2) {
         boolean dead1 = !s1.isAlive();
         boolean dead2 = !s2.isAlive();
@@ -201,6 +206,7 @@ public class Game {
         return empty.get(0);
     }
 
+    /** Helper so food never spawns inside a snake body. */
     private boolean occupiesAnySnake(Position p) {
         return player1.getSnake().occupies(p) || player2.getSnake().occupies(p);
     }
