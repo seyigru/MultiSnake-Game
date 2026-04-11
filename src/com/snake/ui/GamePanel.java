@@ -27,7 +27,14 @@ public class GamePanel extends JPanel {
     public static final int CELL_PX = 30;
     public static final int GRID_CELLS = 20;
     public static final int HUD_HEIGHT = 40;
-    // Board is 20x20; each cell is 30px so play area is 600x600 (plus HUD).
+
+    /** Milestone 2: bright head vs darker body so you can see which way each snake faces. */
+    private static final Color P1_HEAD = new Color(0x4f, 0xc3, 0xf7);
+    private static final Color P1_BODY = new Color(0x02, 0x77, 0xbd);
+    private static final Color P2_HEAD = new Color(0xff, 0xb7, 0x4d);
+    private static final Color P2_BODY = new Color(0xe6, 0x51, 0x00);
+    /** Same arc width/height for fillRoundRect on every segment (spec asked for 8px). */
+    private static final int SNAKE_CORNER_ARC = 8;
 
     private final Game game;
     private Timer timer;
@@ -38,10 +45,15 @@ public class GamePanel extends JPanel {
         setFocusable(true);
     }
 
+    /** Width/height of the grid in cells 
+        return game.getBoard().getSize();
+    }
+
     @Override
     public Dimension getPreferredSize() {
-        int w = CELL_PX * GRID_CELLS;
-        int h = HUD_HEIGHT + CELL_PX * GRID_CELLS;
+        int n = gridCells();
+        int w = CELL_PX * n;
+        int h = HUD_HEIGHT + CELL_PX * n;
         return new Dimension(w, h);
     }
 
@@ -84,11 +96,13 @@ public class GamePanel extends JPanel {
         // Draw HUD first, then translate so (0,0) is the top-left of the grid.
         drawHud(g2);
         g2.translate(0, HUD_HEIGHT);
-        drawGridBackground(g2);
-        drawSnake(g2, game.getPlayer1().getSnake(), new Color(50, 200, 80));
-        drawSnake(g2, game.getPlayer2().getSnake(), new Color(80, 140, 255));
-        drawFood(g2);
-        drawGridLines(g2);
+        int n = gridCells();
+        drawGridBackground(g2, n);
+        // Player 1 = blue family, player 2 = orange  heads are lighter so direction is obvious at a glance.
+        drawSnake(g2, game.getPlayer1().getSnake(), P1_HEAD, P1_BODY, n);
+        drawSnake(g2, game.getPlayer2().getSnake(), P2_HEAD, P2_BODY, n);
+        drawFood(g2, n);
+        drawGridLines(g2, n);
         g2.translate(0, -HUD_HEIGHT);
 
         // Overlays (start/pause/game over) are drawn last so they sit on top.
@@ -113,36 +127,49 @@ public class GamePanel extends JPanel {
         g2.drawString(mid, (getWidth() - mw) / 2, 26);
     }
 
-    private void drawGridBackground(Graphics2D g2) {
+    private void drawGridBackground(Graphics2D g2, int n) {
         g2.setColor(new Color(25, 25, 25));
-        g2.fillRect(0, 0, CELL_PX * GRID_CELLS, CELL_PX * GRID_CELLS);
+        g2.fillRect(0, 0, CELL_PX * n, CELL_PX * n);
     }
 
-    private void drawGridLines(Graphics2D g2) {
+    // Draws the grid lines
+    private void drawGridLines(Graphics2D g2, int n) {
         g2.setColor(new Color(55, 55, 55));
-        for (int i = 0; i <= GRID_CELLS; i++) {
+        for (int i = 0; i <= n; i++) {
             int p = i * CELL_PX;
-            g2.drawLine(p, 0, p, CELL_PX * GRID_CELLS);
-            g2.drawLine(0, p, CELL_PX * GRID_CELLS, p);
+            g2.drawLine(p, 0, p, CELL_PX * n);
+            g2.drawLine(0, p, CELL_PX * n, p);
         }
     }
 
-    private void drawSnake(Graphics2D g2, Snake snake, Color fill) {
+    
+    // Draws the snake
+    private void drawSnake(Graphics2D g2, Snake snake, Color headColor, Color bodyColor, int n) {
         if (!snake.isAlive()) {
             return;
         }
         List<Position> body = snake.getBody();
-        g2.setColor(fill);
-        for (Position pos : body) {
-            int x = pos.getX() * CELL_PX;
-            int y = pos.getY() * CELL_PX;
-            g2.fillRect(x + 1, y + 1, CELL_PX - 2, CELL_PX - 2);
+        int pad = 2;
+        int seg = CELL_PX - 2 * pad;
+        for (int i = 0; i < body.size(); i++) {
+            Position pos = body.get(i);
+            if (pos.getX() < 0 || pos.getY() < 0 || pos.getX() >= n || pos.getY() >= n) {
+                continue;
+            }
+            g2.setColor(i == 0 ? headColor : bodyColor);
+            int x = pos.getX() * CELL_PX + pad;
+            int y = pos.getY() * CELL_PX + pad;
+            g2.fillRoundRect(x, y, seg, seg, SNAKE_CORNER_ARC, SNAKE_CORNER_ARC);
         }
     }
 
-    private void drawFood(Graphics2D g2) {
+    private void drawFood(Graphics2D g2, int n) {
         Position fp = game.getFoodPosition();
         if (fp == null) {
+            return;
+        }
+        // Check if the food is on the board
+        if (fp.getX() < 0 || fp.getY() < 0 || fp.getX() >= n || fp.getY() >= n) {
             return;
         }
         g2.setColor(new Color(255, 60, 60));
@@ -151,6 +178,7 @@ public class GamePanel extends JPanel {
         g2.fillOval(x + 2, y + 2, CELL_PX - 4, CELL_PX - 4);
     }
 
+    // Draws the overlay
     private void drawOverlay(Graphics2D g2) {
         GameState.Phase phase = game.getState().getPhase();
         if (phase == GameState.Phase.START) {
@@ -164,6 +192,7 @@ public class GamePanel extends JPanel {
         }
     }
 
+    // Draws the centered banner
     private void drawCenteredBanner(Graphics2D g2, String text) {
         g2.setColor(new Color(0, 0, 0, 160));
         g2.fillRect(0, 0, getWidth(), getHeight());
