@@ -37,6 +37,14 @@ public class GamePanel extends JPanel {
     /** Same arc width/height for fillRoundRect on every segment (spec asked for 8px). */
     private static final int SNAKE_CORNER_ARC = 8;
 
+    /** Milestone 2 HUD bar matches the darker strip we use in LeaderboardPanel */
+    private static final Color HUD_BACKGROUND = new Color(0x1a, 0x1a, 0x2e);
+
+    /**
+     * Each food eats 2 ms off the delay, so (baseline − current) / 2 = foods eaten → level = foods + 1.
+     */
+    private static final int HUD_SPEED_BASELINE_MS = 150;
+
     private final Game game;
     private Timer timer;
 
@@ -117,20 +125,29 @@ public class GamePanel extends JPanel {
         g2.dispose();
     }
 
+    /**
+     * Top strip: live scores at the sides, speed “level” in the middle
+     */
     private void drawHud(Graphics2D g2) {
-        g2.setColor(new Color(30, 30, 30));
+        g2.setColor(HUD_BACKGROUND);
         g2.fillRect(0, 0, getWidth(), HUD_HEIGHT);
+
         g2.setColor(Color.WHITE);
         g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+        FontMetrics fm = g2.getFontMetrics();
+
         Player p1 = game.getPlayer1();
         Player p2 = game.getPlayer2();
-        g2.drawString("P1: " + p1.getScore(), 12, 26);
-        String right = "P2: " + p2.getScore();
-        int rw = g2.getFontMetrics().stringWidth(right);
+        String left = "Player 1: " + p1.getScore();
+        g2.drawString(left, 12, 26);
+
+        String right = "Player 2: " + p2.getScore();
+        int rw = fm.stringWidth(right);
         g2.drawString(right, getWidth() - rw - 12, 26);
-        int level = (150 - game.getIntervalMs()) / 2 + 1;
-        String mid = "Speed: " + level;
-        int mw = g2.getFontMetrics().stringWidth(mid);
+
+        int level = Math.max(1, (HUD_SPEED_BASELINE_MS - game.getIntervalMs()) / 2 + 1);
+        String mid = "Level " + level;
+        int mw = fm.stringWidth(mid);
         g2.drawString(mid, (getWidth() - mw) / 2, 26);
     }
 
@@ -186,7 +203,7 @@ public class GamePanel extends JPanel {
     }
 
     /**
-     * Semi-transparent grey over the cells only (not the HUD). Text is centred in that rectangle
+     * Transparent grey over the cells only (not the HUD). Text is centred in that rectangle
      * so it reads as “the game is frozen here” while P1/P2 scores stay visible above.
      */
     private void drawPauseOverlayOverGrid(Graphics2D g2, int n) {
