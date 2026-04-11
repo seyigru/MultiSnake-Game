@@ -15,6 +15,7 @@ import java.awt.event.KeyEvent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GameTest {
@@ -115,5 +116,98 @@ public class GameTest {
         assertEquals(150, game.getIntervalMs());
         game.tick();
         assertEquals(148, game.getIntervalMs());
+    }
+
+    // Milestone 2 Israel Kayode: pause / resume / winner / draw / reset / score / game over 
+
+    @Test
+    void testPauseSetsPausedState() {
+        Game game = new Game(board, player1, player2);
+        game.start();
+        game.pause();
+        assertTrue(game.getState().isPaused());
+    }
+
+    @Test
+    void testResumeRestoresPlayingState() {
+        Game game = new Game(board, player1, player2);
+        game.start();
+        game.pause();
+        game.resume();
+        assertTrue(game.getState().isPlaying());
+    }
+
+    @Test
+    void testWinnerIsLastAliveSnake() {
+        snake1 = new Snake(new Position(0, 5), Direction.LEFT, PlayerType.PLAYER1);
+        snake2 = new Snake(new Position(10, 10), Direction.RIGHT, PlayerType.PLAYER2);
+        player1 = new Player("P1", snake1);
+        player2 = new Player("P2", snake2);
+        Game game = new Game(board, player1, player2, new Position(19, 19));
+        game.start();
+        game.tick();
+        assertTrue(game.getState().isGameOver());
+        assertEquals(player2, game.getWinner());
+    }
+
+    @Test
+    void testDrawWhenBothSnakesDieSameTick() {
+        snake1 = new Snake(new Position(10, 10), Direction.RIGHT, PlayerType.PLAYER1);
+        snake2 = new Snake(new Position(12, 10), Direction.LEFT, PlayerType.PLAYER2);
+        player1 = new Player("P1", snake1);
+        player2 = new Player("P2", snake2);
+        Game game = new Game(board, player1, player2, new Position(0, 0));
+        game.start();
+        game.tick();
+        assertTrue(game.getState().isGameOver());
+        assertTrue(!snake1.isAlive() && !snake2.isAlive());
+    }
+
+    @Test
+    void testResetClearsScoresAndState() {
+        Position foodPos = new Position(6, 5);
+        Game game = new Game(board, player1, player2, foodPos);
+        game.start();
+        game.tick();
+        assertTrue(player1.getScore() > 0);
+        game.reset();
+        assertEquals(0, player1.getScore());
+        assertEquals(0, player2.getScore());
+        assertEquals(GameState.Phase.START, game.getState().getPhase());
+    }
+
+    @Test
+    void testScoreIncreasesWhenFoodEaten() {
+        Position foodPos = new Position(6, 5);
+        Game game = new Game(board, player1, player2, foodPos);
+        game.start();
+        int before = player1.getScore();
+        game.tick();
+        assertTrue(player1.getScore() > before);
+    }
+
+    @Test
+    void testGameOverStateSetOnCollision() {
+        snake1 = new Snake(new Position(0, 5), Direction.LEFT, PlayerType.PLAYER1);
+        snake2 = new Snake(new Position(12, 12), Direction.LEFT, PlayerType.PLAYER2);
+        player1 = new Player("P1", snake1);
+        player2 = new Player("P2", snake2);
+        Game game = new Game(board, player1, player2, new Position(19, 19));
+        game.start();
+        game.tick();
+        assertTrue(game.getState().isGameOver());
+    }
+
+    @Test
+    void testWinnerIsNullOnDraw() {
+        snake1 = new Snake(new Position(10, 10), Direction.RIGHT, PlayerType.PLAYER1);
+        snake2 = new Snake(new Position(12, 10), Direction.LEFT, PlayerType.PLAYER2);
+        player1 = new Player("P1", snake1);
+        player2 = new Player("P2", snake2);
+        Game game = new Game(board, player1, player2, new Position(0, 0));
+        game.start();
+        game.tick();
+        assertNull(game.getWinner());
+        assertTrue(game.getState().isGameOver());
     }
 }

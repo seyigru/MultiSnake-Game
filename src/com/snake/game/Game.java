@@ -102,6 +102,10 @@ public class Game {
         }
     }
 
+   
+    public void resume() {
+    }
+
     public void reset() {
         // Reset round-level state; snake bodies/scores are reset by caller (UI) for now.
         state.reset();
