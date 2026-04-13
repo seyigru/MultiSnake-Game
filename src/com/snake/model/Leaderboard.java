@@ -70,6 +70,7 @@ public class Leaderboard {
         }
     }
 
+    // Added save/load using leaderboard.csv, entries are written on every add/clear and loaded on startup, for leaderboard.
     private void load() {
         File f = new File(SAVE_FILE);
         if (!f.exists()) return;
