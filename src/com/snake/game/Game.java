@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.snake.model.CollisionDetector;
+import com.snake.model.DifficultySettings;
 import com.snake.model.Direction;
 import com.snake.model.Food;
 import com.snake.model.GameBoard;
@@ -21,8 +22,6 @@ public class Game {
     private static final int INITIAL_INTERVAL_MS = 150;
     private static final int INTERVAL_STEP_MS = 2;
     private static final int MIN_INTERVAL_MS = 60;
-    // Speed rule for milestone 1: each food speeds the game a little (shorter delay),
-    // but we never go faster than MIN_INTERVAL_MS so it stays playable.
 
     private final GameBoard board;
     private final Player player1;
@@ -30,9 +29,7 @@ public class Game {
     private final GameState state;
     private final CollisionDetector collisionDetector;
     private Food food;
-    /** Milliseconds between tick() calls when the Swing timer fires; shrinks when food is eaten. */
     private int intervalMs;
-    /** Set when someone dies; null means draw if both died the same tick. */
     private Player winner;
 
     public Game(GameBoard board, Player player1, Player player2) {
@@ -54,6 +51,17 @@ public class Game {
         this.collisionDetector = new CollisionDetector(board, GameMode.CLASSIC);
         this.food = new Food(board, initialFood);
         this.intervalMs = INITIAL_INTERVAL_MS;
+        this.winner = null;
+    }
+
+    public Game(GameBoard board, Player player1, Player player2, GameMode gameMode, DifficultySettings settings) {
+        this.board = board;
+        this.player1 = player1;
+        this.player2 = player2;
+        this.state = new GameState();
+        this.collisionDetector = new CollisionDetector(board, gameMode);
+        this.food = new Food(board, spawnFoodPosition());
+        this.intervalMs = settings.getSpeedMs();
         this.winner = null;
     }
 
@@ -82,12 +90,10 @@ public class Game {
     }
 
     public Position getFoodPosition() {
-        // Used by the GamePanel renderer.
         return food.getPosition();
     }
 
     public void start() {
-        // Once the match ended, we should not silently restart from START without reset()
         if (state.isGameOver()) {
             return;
         }
@@ -119,7 +125,6 @@ public class Game {
     }
 
     public void tick() {
-        // Only advance the simulation during PLAYING.
         if (!state.isPlaying()) {
             return;
         }
@@ -129,7 +134,6 @@ public class Game {
             return;
         }
 
-        // One simulation step: both move, then we ask CollisionDetector who died.
         s1.move();
         s2.move();
         collisionDetector.runAllChecks(s1, s2);
@@ -144,7 +148,6 @@ public class Game {
     }
 
     public void handleInput(int keyCode) {
-        // Input is ignored unless we are currently playing (keeps tests predictable).
         if (!state.isPlaying()) {
             return;
         }
@@ -175,11 +178,6 @@ public class Game {
         }
     }
 
-    /**
-     * After collisions run, figure out who won. Milestone 2 rule: if both snakes are dead on the
-     * same tick (head-on-head, double wall, etc.) that is a draw — winner stays null.
-     * Otherwise the surviving player is the winner and we flip to GAME_OVER for the UI.
-     */
     private void resolveGameOver(Snake s1, Snake s2) {
         boolean dead1 = !s1.isAlive();
         boolean dead2 = !s2.isAlive();
@@ -206,38 +204,27 @@ public class Game {
         return empty.get(0);
     }
 
-    /** Helper so food never spawns inside a snake body. */
     private boolean occupiesAnySnake(Position p) {
         return player1.getSnake().occupies(p) || player2.getSnake().occupies(p);
     }
 
     private static Direction wasdToDirection(int keyCode) {
         switch (keyCode) {
-            case KeyEvent.VK_W:
-                return Direction.UP;
-            case KeyEvent.VK_S:
-                return Direction.DOWN;
-            case KeyEvent.VK_A:
-                return Direction.LEFT;
-            case KeyEvent.VK_D:
-                return Direction.RIGHT;
-            default:
-                return null;
+            case KeyEvent.VK_W: return Direction.UP;
+            case KeyEvent.VK_S: return Direction.DOWN;
+            case KeyEvent.VK_A: return Direction.LEFT;
+            case KeyEvent.VK_D: return Direction.RIGHT;
+            default: return null;
         }
     }
 
     private static Direction arrowToDirection(int keyCode) {
         switch (keyCode) {
-            case KeyEvent.VK_UP:
-                return Direction.UP;
-            case KeyEvent.VK_DOWN:
-                return Direction.DOWN;
-            case KeyEvent.VK_LEFT:
-                return Direction.LEFT;
-            case KeyEvent.VK_RIGHT:
-                return Direction.RIGHT;
-            default:
-                return null;
+            case KeyEvent.VK_UP:    return Direction.UP;
+            case KeyEvent.VK_DOWN:  return Direction.DOWN;
+            case KeyEvent.VK_LEFT:  return Direction.LEFT;
+            case KeyEvent.VK_RIGHT: return Direction.RIGHT;
+            default: return null;
         }
     }
 }

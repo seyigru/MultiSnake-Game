@@ -4,12 +4,11 @@ package com.snake.ui;
 // Student Number: 3167486
 //
 // Milestone 2 — screen after GAME_OVER. Shows who won (or DRAW), both scores, and Restart.
-// Person 1’s Leaderboard gets the winner’s row once per round (draws are not stored).
+// Ekene’s Leaderboard gets the winner’s row once per round (draws are not stored).
 
-import com.snake.game.Game;
-import com.snake.game.GameState;
-import com.snake.game.Player;
-import com.snake.model.Leaderboard;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -17,9 +16,11 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
+
+import com.snake.game.Game;
+import com.snake.game.GameState;
+import com.snake.game.Player;
+import com.snake.model.Leaderboard;
 
 public class GameOverPanel extends JPanel {
 

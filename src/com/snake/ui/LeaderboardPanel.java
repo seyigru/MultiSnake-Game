@@ -4,10 +4,14 @@ package com.snake.ui;
 // Student Number: 3167486
 //
 // Milestone 2 — leaderboard screen opened from the main menu.
-// Person 1's Leaderboard class already stores and sorts entries; this panel only reads
+// Ekene's Leaderboard class already stores and sorts entries; this panel only reads
 // getEntries() and paints rows so the player can see rank, name, score, and difficulty.
 
-import com.snake.model.Leaderboard;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -16,11 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.util.List;
+
+import com.snake.model.Leaderboard;
 
 /**
  * Shows every stored score in a read-only table. 

@@ -2,26 +2,26 @@ package com.snake.ui;
 
 // By Israel Kayode
 // Student Number: 3167486
-//
-// This JFrame is the “glue” between Swing input and the Game engine.
-// Keys are handled here so GamePanel can focus on rendering only.
+
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+import javax.swing.JFrame;
 
 import com.snake.game.Game;
 import com.snake.game.GameState;
 import com.snake.model.Direction;
 import com.snake.model.Position;
 
-import javax.swing.JFrame;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
 public class GameFrame extends JFrame {
 
     private final Game game;
     private final GamePanel panel;
+    private final Runnable onBack;
 
-    public GameFrame(Game game) {
+    public GameFrame(Game game, Runnable onBack) {
         this.game = game;
+        this.onBack = onBack;
         this.panel = new GamePanel(game);
         setTitle("Multiplayer Snake");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -45,7 +45,7 @@ public class GameFrame extends JFrame {
 
     private void handleKey(int code) {
         GameState.Phase phase = game.getState().getPhase();
-        // ENTER starts, P pauses/resumes, R restarts after game over.
+
         if (code == KeyEvent.VK_ENTER && phase == GameState.Phase.START) {
             game.start();
             panel.startOrResumeTimer();
@@ -66,12 +66,17 @@ public class GameFrame extends JFrame {
             panel.repaint();
             return;
         }
+        // ESC goes back to main menu from anywhere
+        if (code == KeyEvent.VK_ESCAPE) {
+            panel.stopTimer();
+            dispose();
+            onBack.run();
+            return;
+        }
         game.handleInput(code);
     }
 
     private void restartMatch() {
-        // Restart is a full reset (state + score + snake bodies).
-        // Starting positions are fixed for now to keep it simple and predictable for the demo.
         game.reset();
         game.getPlayer1().reset();
         game.getPlayer2().reset();
