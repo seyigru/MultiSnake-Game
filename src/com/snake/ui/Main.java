@@ -61,6 +61,8 @@ public class Main {
                     cardLayout.show(root, DIFFICULTY);
                 }
 
+                // leaderboard display
+
                 @Override
                 public void onLeaderboard() {
                     leaderboardPanel.refresh();
@@ -92,6 +94,7 @@ public class Main {
             root.add(difficultyPanel, DIFFICULTY);
             root.add(leaderboardPanel, LEADERBOARD);
 
+            // escape key acts as "back key"
             root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "backToMenu");
             root.getActionMap().put("backToMenu", new AbstractAction() {
