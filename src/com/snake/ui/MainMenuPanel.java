@@ -12,6 +12,7 @@ public class MainMenuPanel extends JPanel {
     public interface ModeListener {
         void onClassicMode();
         void onVersusMode();
+        default void onLeaderboard() {}
     }
 
     private final ModeListener listener;
@@ -49,5 +50,11 @@ public class MainMenuPanel extends JPanel {
         versusBtn.addActionListener(e -> listener.onVersusMode());
         gbc.gridy = 2;
         add(versusBtn, gbc);
+
+        JButton leaderboardBtn = new JButton("Leaderboard");
+        leaderboardBtn.setFont(new Font("Arial", Font.PLAIN, 18));
+        leaderboardBtn.addActionListener(e -> listener.onLeaderboard());
+        gbc.gridy = 3;
+        add(leaderboardBtn, gbc);
     }
 }
