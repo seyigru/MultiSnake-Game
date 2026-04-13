@@ -47,6 +47,7 @@ public class GameOverPanel extends JPanel {
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.BLACK);
+        setFocusable(true);
         setBorder(BorderFactory.createEmptyBorder(24, 32, 24, 32));
 
         headline = new JLabel(" ");
@@ -97,26 +98,32 @@ public class GameOverPanel extends JPanel {
         player1ScoreLabel.setText("Player 1 — " + game.getPlayer1().getScore() + " pts");
         player2ScoreLabel.setText("Player 2 — " + game.getPlayer2().getScore() + " pts");
 
-        saveWinnerToLeaderboardIfNeeded();
+        saveScoresIfNeeded();
     }
 
     /**
      * Only winners generate a row draw matches leave the board unchanged.
      */
-    private void saveWinnerToLeaderboardIfNeeded() {
+    private void saveScoresIfNeeded() {
         if (leaderboardSavedThisRound) {
             return;
         }
-        Player w = game.getWinner();
-        if (w != null) {
-            leaderboard.addEntry(w.getName(), w.getScore(), difficultyLabel);
-        }
+
+        // save players score
+        Player p1 = game.getPlayer1();
+        Player p2 = game.getPlayer2();
+        leaderboard.addEntry(p1.getName(), p1.getScore(), difficultyLabel);
+        leaderboard.addEntry(p2.getName(), p2.getScore(), difficultyLabel);
         leaderboardSavedThisRound = true;
+    }
+
+    public void resetSaveFlag() {
+        leaderboardSavedThisRound = false;
     }
 
     private void onRestartClicked() {
         // Save first so we never lose the row if reset cleared scores before addEntry.
-        saveWinnerToLeaderboardIfNeeded();
+        saveScoresIfNeeded();
         game.reset();
         leaderboardSavedThisRound = false;
         onRestartToMainMenu.run();
