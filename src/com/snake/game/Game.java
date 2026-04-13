@@ -6,6 +6,7 @@ package com.snake.game;
 
 import java.awt.event.KeyEvent;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import com.snake.model.CollisionDetector;
@@ -28,6 +29,9 @@ public class Game {
     private final Player player2;
     private final GameState state;
     private final CollisionDetector collisionDetector;
+    private final GameMode gameMode;
+    private final Random random;
+    private final int startingIntervalMs;
     private Food food;
     private int intervalMs;
     private Player winner;
@@ -37,8 +41,11 @@ public class Game {
         this.player1 = player1;
         this.player2 = player2;
         this.state = new GameState();
+        this.gameMode = GameMode.CLASSIC;
         this.collisionDetector = new CollisionDetector(board, GameMode.CLASSIC);
+        this.random = new Random();
         this.food = new Food(board, spawnFoodPosition());
+        this.startingIntervalMs = INITIAL_INTERVAL_MS;
         this.intervalMs = INITIAL_INTERVAL_MS;
         this.winner = null;
     }
@@ -48,8 +55,11 @@ public class Game {
         this.player1 = player1;
         this.player2 = player2;
         this.state = new GameState();
+        this.gameMode = GameMode.CLASSIC;
         this.collisionDetector = new CollisionDetector(board, GameMode.CLASSIC);
+        this.random = new Random();
         this.food = new Food(board, initialFood);
+        this.startingIntervalMs = INITIAL_INTERVAL_MS;
         this.intervalMs = INITIAL_INTERVAL_MS;
         this.winner = null;
     }
@@ -59,8 +69,11 @@ public class Game {
         this.player1 = player1;
         this.player2 = player2;
         this.state = new GameState();
+        this.gameMode = gameMode;
         this.collisionDetector = new CollisionDetector(board, gameMode);
+        this.random = new Random();
         this.food = new Food(board, spawnFoodPosition());
+        this.startingIntervalMs = settings.getSpeedMs();
         this.intervalMs = settings.getSpeedMs();
         this.winner = null;
     }
@@ -87,6 +100,10 @@ public class Game {
 
     public int getIntervalMs() {
         return intervalMs;
+    }
+
+    public GameMode getGameMode() {
+        return gameMode;
     }
 
     public Position getFoodPosition() {
@@ -117,7 +134,7 @@ public class Game {
     public void reset() {
         state.reset();
         winner = null;
-        intervalMs = INITIAL_INTERVAL_MS;
+        intervalMs = startingIntervalMs;
         player1.reset();
         player2.reset();
         board.reset();
@@ -136,6 +153,10 @@ public class Game {
 
         s1.move();
         s2.move();
+        if (gameMode == GameMode.VERSUS) {
+            s1.wrapHead(board.getSize());
+            s2.wrapHead(board.getSize());
+        }
         collisionDetector.runAllChecks(s1, s2);
         resolveGameOver(s1, s2);
 
@@ -201,7 +222,7 @@ public class Game {
         if (empty.isEmpty()) {
             return new Position(0, 0);
         }
-        return empty.get(0);
+        return empty.get(random.nextInt(empty.size()));
     }
 
     private boolean occupiesAnySnake(Position p) {
