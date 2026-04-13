@@ -25,9 +25,9 @@ import java.util.List;
 
 public class GamePanel extends JPanel {
 
-    public static final int CELL_PX = 30;
     public static final int GRID_CELLS = 20;
     public static final int HUD_HEIGHT = 40;
+    private static final int MAX_GRID_PX = 750; //  scale cell size for medium and hard boards to fit smaller screens
 
     /** Milestone 2: bright head vs darker body so you can see which way each snake faces. */
     private static final Color P1_HEAD = new Color(0x4f, 0xc3, 0xf7);
@@ -47,6 +47,7 @@ public class GamePanel extends JPanel {
 
     private final Game game;
     private Timer timer;
+    private Runnable onGameOver;
 
     public GamePanel(Game game) {
         this.game = game;
@@ -54,16 +55,25 @@ public class GamePanel extends JPanel {
         setFocusable(true);
     }
 
+    public void setOnGameOver(Runnable onGameOver) {
+        this.onGameOver = onGameOver;
+    }
+
     /** Width/height of the grid in cells — matches Person 1 {@code GameBoard} size (20 / 30 / 40). */
     private int gridCells() {
         return game.getBoard().getSize();
     }
 
+    private int cellPx() {
+        return Math.min(30, MAX_GRID_PX / gridCells());
+    }
+
     @Override
     public Dimension getPreferredSize() {
         int n = gridCells();
-        int w = CELL_PX * n;
-        int h = HUD_HEIGHT + CELL_PX * n;
+        int cell = cellPx();
+        int w = cell * n;
+        int h = HUD_HEIGHT + cell * n;
         return new Dimension(w, h);
     }
 
@@ -80,6 +90,9 @@ public class GamePanel extends JPanel {
             repaint();
             if (game.getState().isGameOver()) {
                 stopTimer();
+                if (onGameOver != null) {
+                    onGameOver.run();
+                }
             } else {
                 ((Timer) e.getSource()).setDelay(Math.max(1, game.getIntervalMs()));
             }
@@ -153,16 +166,16 @@ public class GamePanel extends JPanel {
 
     private void drawGridBackground(Graphics2D g2, int n) {
         g2.setColor(new Color(25, 25, 25));
-        g2.fillRect(0, 0, CELL_PX * n, CELL_PX * n);
+        g2.fillRect(0, 0, cellPx() * n, cellPx() * n);
     }
 
     // Draws the grid lines
     private void drawGridLines(Graphics2D g2, int n) {
         g2.setColor(new Color(55, 55, 55));
         for (int i = 0; i <= n; i++) {
-            int p = i * CELL_PX;
-            g2.drawLine(p, 0, p, CELL_PX * n);
-            g2.drawLine(0, p, CELL_PX * n, p);
+            int p = i * cellPx();
+            g2.drawLine(p, 0, p, cellPx() * n);
+            g2.drawLine(0, p, cellPx() * n, p);
         }
     }
 
@@ -174,15 +187,15 @@ public class GamePanel extends JPanel {
         }
         List<Position> body = snake.getBody();
         int pad = 2;
-        int seg = CELL_PX - 2 * pad;
+        int seg = cellPx() - 2 * pad;
         for (int i = 0; i < body.size(); i++) {
             Position pos = body.get(i);
             if (pos.getX() < 0 || pos.getY() < 0 || pos.getX() >= n || pos.getY() >= n) {
                 continue;
             }
             g2.setColor(i == 0 ? headColor : bodyColor);
-            int x = pos.getX() * CELL_PX + pad;
-            int y = pos.getY() * CELL_PX + pad;
+            int x = pos.getX() * cellPx() + pad;
+            int y = pos.getY() * cellPx() + pad;
             g2.fillRoundRect(x, y, seg, seg, SNAKE_CORNER_ARC, SNAKE_CORNER_ARC);
         }
     }
@@ -197,9 +210,9 @@ public class GamePanel extends JPanel {
             return;
         }
         g2.setColor(new Color(255, 60, 60));
-        int x = fp.getX() * CELL_PX;
-        int y = fp.getY() * CELL_PX;
-        g2.fillOval(x + 2, y + 2, CELL_PX - 4, CELL_PX - 4);
+        int x = fp.getX() * cellPx();
+        int y = fp.getY() * cellPx();
+        g2.fillOval(x + 2, y + 2, cellPx() - 4, cellPx() - 4);
     }
 
     /**
@@ -207,7 +220,7 @@ public class GamePanel extends JPanel {
      * so it reads as “the game is frozen here” while P1/P2 scores stay visible above.
      */
     private void drawPauseOverlayOverGrid(Graphics2D g2, int n) {
-        int gridPixelH = CELL_PX * n;
+        int gridPixelH = cellPx() * n;
 
         g2.setColor(new Color(90, 90, 90, 175));
         g2.fillRect(0, HUD_HEIGHT, getWidth(), gridPixelH);
