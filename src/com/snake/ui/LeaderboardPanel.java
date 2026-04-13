@@ -68,15 +68,26 @@ public class LeaderboardPanel extends JPanel {
         scroll.setPreferredSize(new Dimension(520, 280));
         add(scroll, BorderLayout.CENTER);
 
+        // add leaderboard btn to main menu
+        JPanel south = new JPanel();
+        south.setBackground(Color.BLACK);
+
+        JButton clear = new JButton("Clear");
+        clear.setFont(new Font("Arial", Font.PLAIN, 16));
+        clear.addActionListener(e -> {
+            leaderboard.clear();
+            refresh();
+        });
+        south.add(clear);
+
         if (onBack != null) {
             JButton back = new JButton("Back to menu");
             back.setFont(new Font("Arial", Font.PLAIN, 16));
             back.addActionListener(e -> onBack.run());
-            JPanel south = new JPanel();
-            south.setBackground(Color.BLACK);
             south.add(back);
-            add(south, BorderLayout.SOUTH);
         }
+
+        add(south, BorderLayout.SOUTH);
 
         refresh();
     }
