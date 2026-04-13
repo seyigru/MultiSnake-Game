@@ -63,16 +63,14 @@ public class CollisionDetector {
      * @return true if a snake-vs-snake collision is detected
      */
     public boolean checkSnakeCollision(Snake s1, Snake s2) {
-        Position head1 = s1.getHead();
-        Position head2 = s2.getHead();
-        List<Position> body1 = s1.getBody();
-        List<Position> body2 = s2.getBody();
-
-        for (int i = 1; i < body2.size(); i++) {
-            if (head1.equals(body2.get(i))) return true;
-        }
-        for (int i = 1; i < body1.size(); i++) {
-            if (head2.equals(body1.get(i))) return true;
+        return checkHeadHitsBody(s1, s2) || checkHeadHitsBody(s2, s1);
+    }
+//    snake-on-body collision kills only the colliding snake
+    public boolean checkHeadHitsBody(Snake attacker, Snake other) {
+        Position head = attacker.getHead();
+        List<Position> body = other.getBody();
+        for (int i = 1; i < body.size(); i++) {
+            if (head.equals(body.get(i))) return true;
         }
         return false;
     }
@@ -102,7 +100,9 @@ public class CollisionDetector {
             s2.kill();
             return;
         }
-        if (checkWallCollision(s1) || checkSelfCollision(s1) || checkSnakeCollision(s1, s2)) s1.kill();
-        if (checkWallCollision(s2) || checkSelfCollision(s2) || checkSnakeCollision(s1, s2)) s2.kill();
+
+        // check wall collison on both snakes
+        if (checkWallCollision(s1) || checkSelfCollision(s1) || checkHeadHitsBody(s1, s2)) s1.kill();
+        if (checkWallCollision(s2) || checkSelfCollision(s2) || checkHeadHitsBody(s2, s1)) s2.kill();
     }
 }
