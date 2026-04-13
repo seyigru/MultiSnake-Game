@@ -173,4 +173,15 @@ public class Snake {
     public int getLength() {
         return body.size();
     }
+
+//    add wrapHead method for Versus mode edge wrapping, using modular arithimetic to avoid snake deltion during wraps in versus mode
+    public void wrapHead(int boardSize) {
+        Position head = body.peekFirst();
+        int wx = ((head.getX() % boardSize) + boardSize) % boardSize;
+        int wy = ((head.getY() % boardSize) + boardSize) % boardSize;
+        if (wx != head.getX() || wy != head.getY()) {
+            body.removeFirst();
+            body.addFirst(new Position(wx, wy));
+        }
+    }
 }
