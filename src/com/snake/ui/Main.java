@@ -1,9 +1,14 @@
 package com.snake.ui;
 
 import java.awt.CardLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import com.snake.game.Game;
@@ -55,6 +60,12 @@ public class Main {
                     chosenMode[0] = GameMode.VERSUS;
                     cardLayout.show(root, DIFFICULTY);
                 }
+
+                @Override
+                public void onLeaderboard() {
+                    leaderboardPanel.refresh();
+                    cardLayout.show(root, LEADERBOARD);
+                }
             });
 
             
@@ -64,11 +75,13 @@ public class Main {
                 GameBoard board = new GameBoard(size);
                 Snake s1 = new Snake(new Position(size / 4,     size / 2), Direction.RIGHT, PlayerType.PLAYER1);
                 Snake s2 = new Snake(new Position(size * 3 / 4, size / 2), Direction.LEFT,  PlayerType.PLAYER2);
-                Player p1 = new Player("P1", s1);
-                Player p2 = new Player("P2", s2);
+                Player p1 = new Player("Player 1", s1);
+                Player p2 = new Player("Player 2", s2);
                 Game game = new Game(board, p1, p2, chosenMode[0], settings);
+                String difficultyLabel = settings.getLevel().name();
 
-                GameFrame gameFrame = new GameFrame(game, () -> {
+                GameFrame gameFrame = new GameFrame(game, leaderboard, difficultyLabel, () -> {
+                    cardLayout.show(root, MAIN_MENU);
                     frame.setVisible(true);
                 });
                 gameFrame.setVisible(true);
@@ -78,6 +91,15 @@ public class Main {
             root.add(mainMenuPanel,   MAIN_MENU);
             root.add(difficultyPanel, DIFFICULTY);
             root.add(leaderboardPanel, LEADERBOARD);
+
+            root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "backToMenu");
+            root.getActionMap().put("backToMenu", new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    cardLayout.show(root, MAIN_MENU);
+                }
+            });
 
             cardLayout.show(root, MAIN_MENU);
 
