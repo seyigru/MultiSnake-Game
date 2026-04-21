@@ -2,7 +2,8 @@ package com.snake.model;
 
 /**
  * Holds the configuration for each difficulty level.
- * Provides board size, tick speed, and food count based on the selected level.
+ * Provides board size, tick speed, food count, score target,
+ * and boost speed based on the selected level.
  *
  * Oluwaseyi Adeyemo
  */
@@ -18,6 +19,8 @@ public class DifficultySettings {
     private final int boardSize;
     private final int speedMs;
     private final int foodCount;
+    private final int scoreTarget;
+    private final int boostSpeedMs;
 
     /**
      * Constructs a DifficultySettings for the given level.
@@ -34,21 +37,29 @@ public class DifficultySettings {
                 this.boardSize = 20;
                 this.speedMs = 150;
                 this.foodCount = 1;
+                this.scoreTarget = 0;
+                this.boostSpeedMs = 0;
                 break;
             case MEDIUM:
                 this.boardSize = 30;
                 this.speedMs = 100;
                 this.foodCount = 2;
+                this.scoreTarget = 0;
+                this.boostSpeedMs = 0;
                 break;
             case HARD:
                 this.boardSize = 40;
                 this.speedMs = 60;
                 this.foodCount = 3;
+                this.scoreTarget = 0;
+                this.boostSpeedMs = 0;
                 break;
             default:
                 this.boardSize = 20;
                 this.speedMs = 150;
                 this.foodCount = 1;
+                this.scoreTarget = 0;
+                this.boostSpeedMs = 0;
         }
     }
 
@@ -86,5 +97,26 @@ public class DifficultySettings {
      */
     public Level getLevel() {
         return level;
+    }
+
+    /**
+     * Returns the score target for this difficulty.
+     * In Versus mode, the first player to reach this score wins.
+     *
+     * @return the score target
+     */
+    public int getScoreTarget() {
+        return scoreTarget;
+    }
+
+    /**
+     * Returns the tick interval in milliseconds while a snake is speed boosted.
+     * Lower than speedMs to increase speed, but scaled per difficulty so the
+     * boost feels proportional rather than overwhelming on harder levels.
+     *
+     * @return the boosted speed in milliseconds
+     */
+    public int getBoostSpeedMs() {
+        return boostSpeedMs;
     }
 }
