@@ -66,7 +66,7 @@ public class Score {
      * @param name the name entered by the player
      */
     public void setName(String name) {
-        // stub
+        this.playerName = name;
     }
 
     /**
@@ -76,6 +76,6 @@ public class Score {
      * @return the player name
      */
     public String getName() {
-        return null;
+        return playerName;
     }
 }
