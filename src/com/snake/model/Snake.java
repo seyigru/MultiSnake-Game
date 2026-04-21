@@ -22,6 +22,8 @@ public class Snake {
     private final PlayerType type;
     private boolean alive;
     private boolean growing;
+    private boolean boosted;
+    private long boostExpiry;
 
     /**
      * Creates a snake of INITIAL_LENGTH at startPos facing startDir.
@@ -36,6 +38,8 @@ public class Snake {
         this.type = type;
         this.alive = true;
         this.growing = false;
+        this.boosted = false;
+        this.boostExpiry = 0;
         initialiseBody(startPos, startDir);
     }
 
@@ -95,7 +99,7 @@ public class Snake {
     public List<Position> getBody() {
         return new ArrayList<>(body);
     }
-
+    
     /**
      * Returns the current direction of the snake.
      *
@@ -143,6 +147,7 @@ public class Snake {
 
     /**
      * Resets the snake to its initial state at the given position and direction.
+     * Also clears any active boost so the snake starts fresh.
      *
      * @param startPos the new starting head position
      * @param startDir the new starting direction
@@ -151,6 +156,8 @@ public class Snake {
         this.direction = startDir;
         this.alive = true;
         this.growing = false;
+        this.boosted = false;
+        this.boostExpiry = 0;
         this.body = new ArrayDeque<>();
         initialiseBody(startPos, startDir);
     }
@@ -174,7 +181,7 @@ public class Snake {
         return body.size();
     }
 
-//    add wrapHead method for Versus mode edge wrapping, using modular arithimetic to avoid snake deltion during wraps in versus mode
+    // add wrapHead method for Versus mode edge wrapping, using modular arithmetic to avoid snake deletion during wraps in versus mode
     public void wrapHead(int boardSize) {
         Position head = body.peekFirst();
         int wx = ((head.getX() % boardSize) + boardSize) % boardSize;
@@ -183,5 +190,27 @@ public class Snake {
             body.removeFirst();
             body.addFirst(new Position(wx, wy));
         }
+    }
+
+    /**
+     * Activates the speed boost for the given duration.
+     * Sets the expiry timestamp using the current system time.
+     * Called by Game.java when SPEED_BOOST food is eaten.
+     *
+     * @param durationMs how long the boost lasts in milliseconds
+     */
+    public void activateBoost(long durationMs) {
+        // stub — to be implemented
+    }
+
+    /**
+     * Returns true if the speed boost is currently active.
+     * Checked by Game.java each tick to decide which speed to use,
+     * and by GamePanel each repaint to decide whether to draw the boost animation.
+     *
+     * @return true if the boost has not yet expired
+     */
+    public boolean isBoostActive() {
+        return false;
     }
 }
