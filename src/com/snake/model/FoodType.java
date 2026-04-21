@@ -13,7 +13,7 @@ public enum FoodType {
     SPEED_BOOST;
 
     // stub — constants to be filled in implementation commit
-    public static final int BOOST_DURATION_MS = 0;
-    public static final int NORMAL_POINTS = 0;
-    public static final int BOOST_POINTS = 0;
+    public static final int BOOST_DURATION_MS = 5000;
+    public static final int NORMAL_POINTS = 1;
+    public static final int BOOST_POINTS = 2;
 }
