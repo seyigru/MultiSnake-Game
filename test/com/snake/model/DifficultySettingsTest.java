@@ -64,6 +64,7 @@ public class DifficultySettingsTest {
         DifficultySettings settings = new DifficultySettings(DifficultySettings.Level.HARD);
         assertEquals(60, settings.getSpeedMs());
     }
+    
     @Test
     void testEasyScoreTarget() {
         DifficultySettings settings = new DifficultySettings(DifficultySettings.Level.EASY);

@@ -37,29 +37,29 @@ public class DifficultySettings {
                 this.boardSize = 20;
                 this.speedMs = 150;
                 this.foodCount = 1;
-                this.scoreTarget = 0;
-                this.boostSpeedMs = 0;
+                this.scoreTarget = 5;
+                this.boostSpeedMs = 90;
                 break;
             case MEDIUM:
                 this.boardSize = 30;
                 this.speedMs = 100;
                 this.foodCount = 2;
-                this.scoreTarget = 0;
-                this.boostSpeedMs = 0;
+                this.scoreTarget = 10;
+                this.boostSpeedMs = 65;
                 break;
             case HARD:
                 this.boardSize = 40;
                 this.speedMs = 60;
                 this.foodCount = 3;
-                this.scoreTarget = 0;
-                this.boostSpeedMs = 0;
+                this.scoreTarget = 15;
+                this.boostSpeedMs = 45;
                 break;
             default:
                 this.boardSize = 20;
                 this.speedMs = 150;
                 this.foodCount = 1;
-                this.scoreTarget = 0;
-                this.boostSpeedMs = 0;
+                this.scoreTarget = 5;
+                this.boostSpeedMs = 90;
         }
     }
 
