@@ -17,7 +17,7 @@ import javax.swing.SwingConstants;
  * Shown after DifficultyPanel and before GameFrame via CardLayout in Main.
  * If left blank, names default to Player 1 and Player 2.
  *
- * Done by Oluwaseyi Adeyemo
+ * Done by Israel kayode and mnodified by Oluwaseyi Adeyemo
  */
 public class NameEntryPanel extends JPanel {
 
@@ -77,8 +77,6 @@ public class NameEntryPanel extends JPanel {
 
         startButton = new JButton("Start Game");
         startButton.setFont(new Font("Arial", Font.BOLD, 16));
-        startButton.setBackground(new Color(34, 139, 34));
-        startButton.setForeground(Color.WHITE);
         startButton.setFocusPainted(false);
         gbc.gridx = 0;
         gbc.gridy = 3;

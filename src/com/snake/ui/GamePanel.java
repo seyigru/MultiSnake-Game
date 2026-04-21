@@ -6,14 +6,6 @@ package com.snake.ui;
 // Swing renderer for the game. All drawing is based on reading the current game objects
 // (snakes, food, state). I avoided putting logic here so the Game class stays testable.
 
-import com.snake.game.Game;
-import com.snake.game.GameState;
-import com.snake.game.Player;
-import com.snake.model.Position;
-import com.snake.model.Snake;
-
-import javax.swing.JPanel;
-import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -22,6 +14,15 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.List;
+
+import javax.swing.JPanel;
+import javax.swing.Timer;
+
+import com.snake.game.Game;
+import com.snake.game.GameState;
+import com.snake.game.Player;
+import com.snake.model.Position;
+import com.snake.model.Snake;
 
 public class GamePanel extends JPanel {
 
@@ -139,7 +140,7 @@ public class GamePanel extends JPanel {
     }
 
     /**
-     * Top strip: live scores at the sides, speed “level” in the middle
+     * Top strip: live scores at the sides, speed "level" in the middle
      */
     private void drawHud(Graphics2D g2) {
         g2.setColor(HUD_BACKGROUND);
@@ -151,10 +152,10 @@ public class GamePanel extends JPanel {
 
         Player p1 = game.getPlayer1();
         Player p2 = game.getPlayer2();
-        String left = "Player 1: " + p1.getScore();
+        String left = p1.getName() + ": " + p1.getScore();
         g2.drawString(left, 12, 26);
 
-        String right = "Player 2: " + p2.getScore();
+        String right = p2.getName() + ": " + p2.getScore();
         int rw = fm.stringWidth(right);
         g2.drawString(right, getWidth() - rw - 12, 26);
 
@@ -217,7 +218,7 @@ public class GamePanel extends JPanel {
 
     /**
      * Transparent grey over the cells only (not the HUD). Text is centred in that rectangle
-     * so it reads as “the game is frozen here” while P1/P2 scores stay visible above.
+     * so it reads as "the game is frozen here" while P1/P2 scores stay visible above.
      */
     private void drawPauseOverlayOverGrid(Graphics2D g2, int n) {
         int gridPixelH = cellPx() * n;
