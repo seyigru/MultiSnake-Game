@@ -99,7 +99,7 @@ public class Snake {
     public List<Position> getBody() {
         return new ArrayList<>(body);
     }
-    
+
     /**
      * Returns the current direction of the snake.
      *
@@ -200,7 +200,8 @@ public class Snake {
      * @param durationMs how long the boost lasts in milliseconds
      */
     public void activateBoost(long durationMs) {
-        // stub — to be implemented
+        this.boosted = true;
+        this.boostExpiry = System.currentTimeMillis() + durationMs;
     }
 
     /**
@@ -211,6 +212,9 @@ public class Snake {
      * @return true if the boost has not yet expired
      */
     public boolean isBoostActive() {
-        return false;
+         if (boosted && System.currentTimeMillis() >= boostExpiry) {
+            boosted = false;
+        }
+        return boosted;
     }
 }
