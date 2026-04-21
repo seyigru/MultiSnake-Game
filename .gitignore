@@ -14,3 +14,4 @@ target/
 lib/*.jar
 .classtarget/
 out/
+.cvs
