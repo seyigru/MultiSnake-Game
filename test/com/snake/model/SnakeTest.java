@@ -89,4 +89,40 @@ public class SnakeTest {
         assertEquals(Snake.INITIAL_LENGTH, snake.getLength());
         assertTrue(snake.isAlive());
     }
+
+    @Test
+    void testIsBoostActiveInitiallyFalse() {
+        Snake snake = new Snake(new Position(5, 5), Direction.RIGHT, PlayerType.PLAYER1);
+        assertFalse(snake.isBoostActive());
+    }
+
+    @Test
+    void testActivateBoostSetsActiveTrue() {
+        Snake snake = new Snake(new Position(5, 5), Direction.RIGHT, PlayerType.PLAYER1);
+        snake.activateBoost(5000);
+        assertTrue(snake.isBoostActive());
+    }
+
+    @Test
+    void testBoostExpiresAfterDuration() throws InterruptedException {
+        Snake snake = new Snake(new Position(5, 5), Direction.RIGHT, PlayerType.PLAYER1);
+        snake.activateBoost(100);
+        Thread.sleep(150);
+        assertFalse(snake.isBoostActive());
+    }
+
+    @Test
+    void testIsBoostActiveReturnsTrueWhileActive() {
+        Snake snake = new Snake(new Position(5, 5), Direction.RIGHT, PlayerType.PLAYER1);
+        snake.activateBoost(5000);
+        assertTrue(snake.isBoostActive());
+    }
+
+    @Test
+    void testResetClearsBoost() {
+        Snake snake = new Snake(new Position(5, 5), Direction.RIGHT, PlayerType.PLAYER1);
+        snake.activateBoost(5000);
+        snake.reset(new Position(5, 5), Direction.RIGHT);
+        assertFalse(snake.isBoostActive());
+    }
 }
