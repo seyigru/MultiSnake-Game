@@ -31,17 +31,17 @@ public class Cell {
 
     // returns the food type stored on this cell, null if no food is here
     public FoodType getFoodType() {
-        // stub - always returns null until implementation commit
-        return null;
+        return foodType;
     }
 
     // stores the food type when this cell is set to FOOD state
     public void setFoodType(FoodType foodType) {
-        // stub - does nothing yet
+        this.foodType = foodType;
     }
 
     // clears the cell back to empty and removes any stored food type
     public void reset() {
-        // stub - does nothing yet
+        this.state = CellState.EMPTY;
+        this.foodType = null;
     }
 }
