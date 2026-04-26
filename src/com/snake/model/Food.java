@@ -17,8 +17,8 @@ public class Food {
     // tracks all active food positions
     private final List<Position> positions;
 
-    // type of this food, NORMAL or SPEED_BOOST, set by the constructor
-    private FoodType type;
+    // type of this food, NORMAL by default, set to SPEED_BOOST via the overloaded constructor
+    private FoodType type = FoodType.NORMAL;
 
     // single food item - original constructor kept for backwards compatibility
     public Food(GameBoard board) {
@@ -48,7 +48,7 @@ public class Food {
         this.random = new Random();
         this.count = count;
         this.positions = new ArrayList<>();
-        // stub - type is not stored yet, implementation comes in next commit
+        this.type = type;
     }
 
     // spawns all required food items at once
