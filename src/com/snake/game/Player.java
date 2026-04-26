@@ -3,25 +3,28 @@ package com.snake.game;
 // By Israel Kayode
 // Student Number: 3167486
 //
-// Simple wrapper around a Snake that stores the player's name and score.
-// Score is kept here (not inside Snake) so scoring rules can change without touching movement logic.
+// Simple wrapper around a Snake that stores the player's score and name.
 
+import com.snake.model.Score;
 import com.snake.model.Snake;
 
 public class Player {
 
-    private final String name;
     private final Snake snake;
-    private int score;
+    private final Score score;
 
     public Player(String name, Snake snake) {
-        this.name = name;
         this.snake = snake;
-        this.score = 0;
+        this.score = new Score(snake.getType());
+        this.score.setName(name);
     }
 
     public String getName() {
-        return name;
+        return score.getName();
+    }
+
+    public void setName(String name) {
+        score.setName(name);
     }
 
     public Snake getSnake() {
@@ -29,17 +32,16 @@ public class Player {
     }
 
     public int getScore() {
-        return score;
+        return score.getScore();
     }
 
     public void addScore(int delta) {
-        // In milestone 1 we only add points on food, so delta is usually +1.
-        score += delta;
+        score.addPoints(delta);
     }
 
     public void reset() {
         // Reset only affects score; snake reset is handled by GameFrame/Game logic.
-        score = 0;
+        score.reset();
     }
 
     public boolean isBoostActive() {
