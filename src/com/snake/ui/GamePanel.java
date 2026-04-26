@@ -6,6 +6,7 @@ package com.snake.ui;
 // Swing renderer for the game. All drawing is based on reading the current game objects
 // (snakes, food, state). I avoided putting logic here so the Game class stays testable.
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -21,6 +22,11 @@ import javax.swing.Timer;
 import com.snake.game.Game;
 import com.snake.game.GameState;
 import com.snake.game.Player;
+import com.snake.model.Cell;
+import com.snake.model.CellState;
+import com.snake.model.DifficultySettings;
+import com.snake.model.FoodType;
+import com.snake.model.GameMode;
 import com.snake.model.Position;
 import com.snake.model.Snake;
 
@@ -145,9 +151,7 @@ public class GamePanel extends JPanel {
         g2.dispose();
     }
 
-    /**
-     * Top strip: live scores at the sides, speed "level" in the middle
-     */
+    // top strip showing player names, live scores, and the score target for this difficulty
     private void drawHud(Graphics2D g2) {
         g2.setColor(HUD_BACKGROUND);
         g2.fillRect(0, 0, getWidth(), HUD_HEIGHT);
@@ -158,6 +162,7 @@ public class GamePanel extends JPanel {
 
         Player p1 = game.getPlayer1();
         Player p2 = game.getPlayer2();
+        // names come straight from Player.getName, which Player loads from Score.getName
         String left = p1.getName() + ": " + p1.getScore();
         g2.drawString(left, 12, 26);
 
@@ -165,10 +170,30 @@ public class GamePanel extends JPanel {
         int rw = fm.stringWidth(right);
         g2.drawString(right, getWidth() - rw - 12, 26);
 
-        int level = Math.max(1, (HUD_SPEED_BASELINE_MS - game.getIntervalMs()) / 2 + 1);
-        String mid = "Level " + level;
+        // centre label switches between speed level and the versus score target
+        String mid;
+        if (game.getGameMode() == GameMode.VERSUS) {
+            int target = readScoreTarget();
+            mid = "First to " + target;
+        } else {
+            int level = Math.max(1, (HUD_SPEED_BASELINE_MS - game.getIntervalMs()) / 2 + 1);
+            mid = "Level " + level;
+        }
         int mw = fm.stringWidth(mid);
         g2.drawString(mid, (getWidth() - mw) / 2, 26);
+    }
+
+    // best-effort lookup of the difficulty score target, falls back to 10 if Game does not expose it
+    private int readScoreTarget() {
+        try {
+            java.lang.reflect.Method m = game.getClass().getMethod("getDifficultySettings");
+            Object settings = m.invoke(game);
+            if (settings instanceof DifficultySettings) {
+                return ((DifficultySettings) settings).getScoreTarget();
+            }
+        } catch (ReflectiveOperationException ignored) {
+        }
+        return 10;
     }
 
     private void drawGridBackground(Graphics2D g2, int n) {
@@ -255,19 +280,39 @@ public class GamePanel extends JPanel {
         }
     }
 
+    // walks every cell on the board and draws food based on its FoodType
+    // SPEED_BOOST cells get an animated halo behind a yellow fill, NORMAL stays red
     private void drawFood(Graphics2D g2, int n) {
-        Position fp = game.getFoodPosition();
-        if (fp == null) {
-            return;
+        for (int x = 0; x < n; x++) {
+            for (int y = 0; y < n; y++) {
+                Cell cell = game.getBoard().getCell(new Position(x, y));
+                if (cell.getState() != CellState.FOOD) {
+                    continue;
+                }
+                int px = x * cellPx();
+                int py = y * cellPx();
+
+                if (cell.getFoodType() == FoodType.SPEED_BOOST) {
+                    drawBoostFoodGlow(g2, px, py);
+                    g2.setColor(new Color(255, 200, 60));
+                } else {
+                    g2.setColor(new Color(255, 60, 60));
+                }
+                g2.fillOval(px + 2, py + 2, cellPx() - 4, cellPx() - 4);
+            }
         }
-        // Check if the food is on the board
-        if (fp.getX() < 0 || fp.getY() < 0 || fp.getX() >= n || fp.getY() >= n) {
-            return;
-        }
-        g2.setColor(new Color(255, 60, 60));
-        int x = fp.getX() * cellPx();
-        int y = fp.getY() * cellPx();
-        g2.fillOval(x + 2, y + 2, cellPx() - 4, cellPx() - 4);
+    }
+
+    // draws a pulsing halo ring around boost food using AlphaComposite for transparency
+    private void drawBoostFoodGlow(Graphics2D g2, int px, int py) {
+        java.awt.Composite original = g2.getComposite();
+        // pulse alpha between roughly 0.2 and 0.6 using the animation tick
+        float pulse = (float) (0.4 + 0.2 * Math.sin(animationTick * 0.15));
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, pulse));
+        g2.setColor(new Color(255, 215, 0));
+        int halo = cellPx() + 6;
+        g2.fillOval(px - 3, py - 3, halo, halo);
+        g2.setComposite(original);
     }
 
     /**
