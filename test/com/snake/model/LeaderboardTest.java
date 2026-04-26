@@ -1,8 +1,11 @@
 package com.snake.model;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.File;
 
 //By Ekene Ochuba - 3155904
 
@@ -10,11 +13,22 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LeaderboardTest {
 
     private Leaderboard leaderboard;
+    // each test gets its own save file so prior runs cannot leak entries into the next test
+    private String testSaveFile;
 
     // Fresh leaderboard before each test
     @BeforeEach
     void setup() {
-        leaderboard = new Leaderboard();
+        testSaveFile = "leaderboard-test-" + System.nanoTime() + ".csv";
+        leaderboard = new Leaderboard(testSaveFile);
+    }
+
+    // Always clean up the per-test save file so the working directory stays tidy
+    @AfterEach
+    void teardown() {
+        if (testSaveFile != null) {
+            new File(testSaveFile).delete();
+        }
     }
 
     // Adding an entry should store it

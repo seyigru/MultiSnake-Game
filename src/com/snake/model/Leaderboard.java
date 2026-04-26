@@ -27,12 +27,19 @@ public class Leaderboard {
         }
     }
 
-    private static final String SAVE_FILE = "leaderboard.csv";
+    private static final String DEFAULT_SAVE_FILE = "leaderboard.csv";
 
     private final List<Entry> entries;
+    private final String saveFile;
 
-    // Starts empty - entries are added as games finish
+    // Starts empty - entries are added as games finish, persists to leaderboard.csv
     public Leaderboard() {
+        this(DEFAULT_SAVE_FILE);
+    }
+
+    // Lets callers (mainly tests) point at a different save file so runs do not bleed into each other
+    public Leaderboard(String saveFile) {
+        this.saveFile = saveFile;
         this.entries = new ArrayList<>();
         load();
     }
@@ -61,7 +68,7 @@ public class Leaderboard {
     }
 
     private void save() {
-        try (BufferedWriter w = new BufferedWriter(new FileWriter(SAVE_FILE))) {
+        try (BufferedWriter w = new BufferedWriter(new FileWriter(saveFile))) {
             for (Entry e : entries) {
                 w.write(e.name + "," + e.score + "," + e.difficulty);
                 w.newLine();
@@ -72,7 +79,7 @@ public class Leaderboard {
 
     // Added save/load using leaderboard.csv, entries are written on every add/clear and loaded on startup, for leaderboard.
     private void load() {
-        File f = new File(SAVE_FILE);
+        File f = new File(saveFile);
         if (!f.exists()) return;
         try (BufferedReader r = new BufferedReader(new FileReader(f))) {
             String line;
