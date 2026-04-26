@@ -6,7 +6,10 @@ package com.snake.game;
 import com.snake.model.Direction;
 import com.snake.model.GameBoard;
 import com.snake.model.CellState;
+import com.snake.model.DifficultySettings;
+import com.snake.model.Food;
 import com.snake.model.FoodType;
+import com.snake.model.GameMode;
 import com.snake.model.PlayerType;
 import com.snake.model.Position;
 import com.snake.model.Snake;
@@ -14,10 +17,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.event.KeyEvent;
+import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GameTest {
@@ -226,5 +231,49 @@ public class GameTest {
         game.tick();
         assertNull(game.getWinner());
         assertTrue(game.getState().isGameOver());
+    }
+
+    // Milestone 3: versus race to score target by Israel
+    // VERSUS + DifficultySettings randomises food in start(),
+    // normal Food one step in front of P1 (default head (5,5) moving RIGHT (6,5)).
+
+    @Test
+    void testGameEndsWhenScoreTargetReached() throws Exception {
+        DifficultySettings easy = new DifficultySettings(DifficultySettings.Level.EASY);
+        Game game = new Game(board, player1, player2, GameMode.VERSUS, easy);
+        player1.addScore(4);
+        game.start();
+        placeNormalFoodOneStepAheadOfP1(game);
+        game.tick();
+        assertTrue(game.getState().isGameOver());
+    }
+
+    @Test
+    void testCorrectWinnerReturnedOnTarget() throws Exception {
+        DifficultySettings easy = new DifficultySettings(DifficultySettings.Level.EASY);
+        Game game = new Game(board, player1, player2, GameMode.VERSUS, easy);
+        player1.addScore(4);
+        game.start();
+        placeNormalFoodOneStepAheadOfP1(game);
+        game.tick();
+        assertSame(player1, game.getWinner());
+    }
+
+    @Test
+    void testClassicModeIgnoresScoreTarget() {
+        DifficultySettings easy = new DifficultySettings(DifficultySettings.Level.EASY);
+        Game game = new Game(board, player1, player2, GameMode.CLASSIC, easy);
+        player1.addScore(10);
+        game.start();
+        assertTrue(game.getState().isPlaying());
+    }
+
+    private void placeNormalFoodOneStepAheadOfP1(Game game) throws Exception {
+        Field foodField = Game.class.getDeclaredField("food");
+        foodField.setAccessible(true);
+        Food food = (Food) foodField.get(game);
+        Position oneStepAhead = new Position(6, 5);
+        game.getBoard().getCell(oneStepAhead).reset();
+        food.setPosition(oneStepAhead);
     }
 }
