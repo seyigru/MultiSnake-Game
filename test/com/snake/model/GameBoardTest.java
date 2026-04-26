@@ -115,4 +115,51 @@ public class GameBoardTest {
         hard.reset();
         assertTrue(hard.getCell(new Position(35, 35)).isEmpty());
     }
+
+    // spawnBoostFood should mark exactly one cell as FOOD on a fresh board
+    @Test
+    void testSpawnBoostFoodPlacesFood() {
+        board.spawnBoostFood();
+        int foodCells = 0;
+        for (int x = 0; x < GameBoard.DEFAULT_SIZE; x++) {
+            for (int y = 0; y < GameBoard.DEFAULT_SIZE; y++) {
+                if (board.getCell(new Position(x, y)).getState() == CellState.FOOD) {
+                    foodCells++;
+                }
+            }
+        }
+        assertEquals(1, foodCells);
+    }
+
+    // the spawned cell should carry the SPEED_BOOST type so renderers can pick it up
+    @Test
+    void testBoostFoodHasCorrectType() {
+        board.spawnBoostFood();
+        FoodType found = null;
+        for (int x = 0; x < GameBoard.DEFAULT_SIZE; x++) {
+            for (int y = 0; y < GameBoard.DEFAULT_SIZE; y++) {
+                Cell c = board.getCell(new Position(x, y));
+                if (c.getFoodType() == FoodType.SPEED_BOOST) {
+                    found = c.getFoodType();
+                }
+            }
+        }
+        assertEquals(FoodType.SPEED_BOOST, found);
+    }
+
+    // calling spawnBoostFood twice should still leave only one boost cell on the board
+    @Test
+    void testOnlyOneBoostFoodPerBoard() {
+        board.spawnBoostFood();
+        board.spawnBoostFood();
+        int boostCells = 0;
+        for (int x = 0; x < GameBoard.DEFAULT_SIZE; x++) {
+            for (int y = 0; y < GameBoard.DEFAULT_SIZE; y++) {
+                if (board.getCell(new Position(x, y)).getFoodType() == FoodType.SPEED_BOOST) {
+                    boostCells++;
+                }
+            }
+        }
+        assertEquals(1, boostCells);
+    }
 }
