@@ -57,4 +57,53 @@ public class LeaderboardTest {
         leaderboard.addEntry("Bob",   200, "Medium");
         assertEquals(2, leaderboard.getEntries().size());
     }
+
+    // panel should expose every player name through its table model
+    @Test
+    void testLeaderboardShowsPlayerName() {
+        leaderboard.addEntry("Alice", 100, "Easy");
+        leaderboard.addEntry("Bob",   200, "Medium");
+
+        com.snake.ui.LeaderboardPanel panel = new com.snake.ui.LeaderboardPanel(leaderboard, null);
+        // walk the panel tree to find the JTable that renders entries
+        javax.swing.JTable table = findTable(panel);
+        assertNotNull(table, "panel should contain a JTable");
+
+        boolean foundAlice = false;
+        boolean foundBob = false;
+        for (int row = 0; row < table.getRowCount(); row++) {
+            String name = String.valueOf(table.getValueAt(row, 1));
+            if ("Alice".equals(name)) foundAlice = true;
+            if ("Bob".equals(name))   foundBob = true;
+        }
+        assertTrue(foundAlice && foundBob, "table should contain both player names");
+    }
+
+    // calling highlightSession should mark the matching row so the renderer can colour it
+    @Test
+    void testSessionRowHighlighted() {
+        leaderboard.addEntry("Alice", 100, "Easy");
+        leaderboard.addEntry("Bob",   200, "Medium");
+
+        com.snake.ui.LeaderboardPanel panel = new com.snake.ui.LeaderboardPanel(leaderboard, null);
+        panel.highlightSession("Bob", 200);
+        // Bob has the higher score so he sits at row 0 once entries sort descending
+        assertEquals(0, panel.getHighlightedRow());
+    }
+
+    // helper that finds the first JTable nested inside the given component tree
+    private javax.swing.JTable findTable(java.awt.Container root) {
+        for (java.awt.Component c : root.getComponents()) {
+            if (c instanceof javax.swing.JTable) return (javax.swing.JTable) c;
+            if (c instanceof javax.swing.JScrollPane) {
+                java.awt.Component view = ((javax.swing.JScrollPane) c).getViewport().getView();
+                if (view instanceof javax.swing.JTable) return (javax.swing.JTable) view;
+            }
+            if (c instanceof java.awt.Container) {
+                javax.swing.JTable found = findTable((java.awt.Container) c);
+                if (found != null) return found;
+            }
+        }
+        return null;
+    }
 }
