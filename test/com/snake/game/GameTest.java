@@ -5,6 +5,8 @@ package com.snake.game;
 
 import com.snake.model.Direction;
 import com.snake.model.GameBoard;
+import com.snake.model.CellState;
+import com.snake.model.FoodType;
 import com.snake.model.PlayerType;
 import com.snake.model.Position;
 import com.snake.model.Snake;
@@ -93,6 +95,21 @@ public class GameTest {
         int scoreBefore = player1.getScore();
         game.tick();
         assertTrue(player1.getScore() > scoreBefore);
+    }
+
+    @Test
+    void testBoostFoodTriggerActivateBoost() {
+        // Place Speed Boost one step ahead of Player 1 so it is eaten on the next tick
+        Position boostPos = new Position(6, 5);
+        board.getCell(boostPos).setState(CellState.FOOD);
+        board.getCell(boostPos).setFoodType(FoodType.SPEED_BOOST);
+
+        Game game = new Game(board, player1, player2);
+        game.start();
+        game.tick();
+
+        // Step 3 (RED): Player boost API not yet wired
+        assertTrue(player1.isBoostActive());
     }
 
     @Test
