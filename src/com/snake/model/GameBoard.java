@@ -4,6 +4,7 @@ package com.snake.model;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Random;
 
 // manages the 20x20 grid of cells that makes up the game board, now supports dynamic sizing for difficulty levels
 public class GameBoard {
@@ -11,6 +12,7 @@ public class GameBoard {
     public static final int DEFAULT_SIZE = 20;
     private final int size;
     private final Cell[][] grid;
+    private final Random random = new Random();
 
     // default constructor, keeps 20x20 for backwards compatibility
     public GameBoard() {
@@ -56,6 +58,12 @@ public class GameBoard {
                 if (grid[x][y].isEmpty())
                     empty.add(new Position(x, y));
         return empty;
+    }
+
+    // places exactly one SPEED_BOOST food cell on the board
+    // called once at game start in VERSUS mode alongside spawnFood
+    public void spawnBoostFood() {
+        // stub - returns without placing food, implementation comes in next commit
     }
 
     // wipes everything back to empty, works for all board sizes
