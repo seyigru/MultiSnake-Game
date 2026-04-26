@@ -6,11 +6,15 @@ package com.snake.game;
 import com.snake.model.Direction;
 import com.snake.model.PlayerType;
 import com.snake.model.Position;
+import com.snake.model.Score;
 import com.snake.model.Snake;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PlayerTest {
 
@@ -50,6 +54,26 @@ public class PlayerTest {
         player.addScore(5);
         player.reset();
         assertEquals(0, player.getScore());
+    }
+
+    // Milestone 3 Step 9 — name wiring to Score, boost delegates to Snake by Israel
+
+    @Test
+    void testPlayerNamePassedToScore() throws Exception {
+        Player player = new Player("P1", newTestSnake());
+        player.setName("Israel");
+        Field scoreField = Player.class.getDeclaredField("score");
+        scoreField.setAccessible(true);
+        Score score = (Score) scoreField.get(player);
+        assertEquals("Israel", score.getName());
+    }
+
+    @Test
+    void testPlayerBoostDelegatesToSnake() {
+        Snake snake = newTestSnake();
+        Player player = new Player("P1", snake);
+        snake.activateBoost(5000);
+        assertTrue(player.isBoostActive());
     }
 }
 
