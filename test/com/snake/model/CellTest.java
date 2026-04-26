@@ -37,4 +37,24 @@ public class CellTest {
         cell.setState(CellState.SNAKE_P1);
         assertFalse(cell.isEmpty());
     }
+
+    // setting the food type on a cell should be retrievable via getFoodType
+    @Test
+    void testCellStoresFoodTypeWhenOccupied() {
+        Cell cell = new Cell();
+        cell.setState(CellState.FOOD);
+        cell.setFoodType(FoodType.SPEED_BOOST);
+        assertEquals(FoodType.SPEED_BOOST, cell.getFoodType());
+    }
+
+    // reset should wipe the cell back to empty and clear the food type
+    @Test
+    void testCellFoodTypeClearedOnReset() {
+        Cell cell = new Cell();
+        cell.setState(CellState.FOOD);
+        cell.setFoodType(FoodType.SPEED_BOOST);
+        cell.reset();
+        assertEquals(CellState.EMPTY, cell.getState());
+        assertNull(cell.getFoodType());
+    }
 }
