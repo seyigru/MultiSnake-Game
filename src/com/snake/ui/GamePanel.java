@@ -50,6 +50,9 @@ public class GamePanel extends JPanel {
     private Timer timer;
     private Runnable onGameOver;
 
+    // increments every repaint, drives the boosted snake shimmer independently of game speed
+    private int animationTick = 0;
+
     public GamePanel(Game game) {
         this.game = game;
         setBackground(Color.BLACK);
@@ -117,6 +120,9 @@ public class GamePanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+        // bump the animation tick every paint so shimmer runs smoothly even at slow tick speeds
+        animationTick++;
+
         // Draw HUD first, then translate so (0,0) is the top-left of the grid.
         drawHud(g2);
         g2.translate(0, HUD_HEIGHT);
@@ -180,8 +186,8 @@ public class GamePanel extends JPanel {
         }
     }
 
-    
-    // Draws the snake
+    // Draws the snake. When the snake is boosted, each segment shimmers in sequence
+    // using a sine wave on animationTick, and the head eyes glow yellow-orange.
     private void drawSnake(Graphics2D g2, Snake snake, Color headColor, Color bodyColor, int n) {
         if (!snake.isAlive()) {
             return;
@@ -189,15 +195,63 @@ public class GamePanel extends JPanel {
         List<Position> body = snake.getBody();
         int pad = 2;
         int seg = cellPx() - 2 * pad;
+        boolean boosted = snake.isBoostActive();
         for (int i = 0; i < body.size(); i++) {
             Position pos = body.get(i);
             if (pos.getX() < 0 || pos.getY() < 0 || pos.getX() >= n || pos.getY() >= n) {
                 continue;
             }
-            g2.setColor(i == 0 ? headColor : bodyColor);
+            Color base = i == 0 ? headColor : bodyColor;
+            // when boosted, oscillate brightness using a sine wave so each segment shimmers in sequence
+            if (boosted) {
+                double wave = Math.sin(animationTick * 0.2 + i);
+                int boost = (int) (wave * 60);
+                int r = Math.max(0, Math.min(255, base.getRed()   + boost));
+                int gC = Math.max(0, Math.min(255, base.getGreen() + boost));
+                int b = Math.max(0, Math.min(255, base.getBlue()  + boost));
+                g2.setColor(new Color(r, gC, b));
+            } else {
+                g2.setColor(base);
+            }
             int x = pos.getX() * cellPx() + pad;
             int y = pos.getY() * cellPx() + pad;
             g2.fillRoundRect(x, y, seg, seg, SNAKE_CORNER_ARC, SNAKE_CORNER_ARC);
+
+            // glowing yellow-orange eyes on the head while boosted, normal small dots otherwise
+            if (i == 0) {
+                drawSnakeEyes(g2, x, y, seg, snake.getDirection(), boosted);
+            }
+        }
+    }
+
+    // draws two small dots on the head to indicate facing direction
+    // larger and yellow-orange when the boost is active for a clear visual cue
+    private void drawSnakeEyes(Graphics2D g2, int x, int y, int seg, com.snake.model.Direction dir, boolean boosted) {
+        int eyeSize = boosted ? Math.max(4, seg / 3) : Math.max(2, seg / 5);
+        Color eyeColor = boosted ? new Color(0xff, 0xd5, 0x4f) : Color.WHITE;
+        g2.setColor(eyeColor);
+
+        int cx = x + seg / 2;
+        int cy = y + seg / 2;
+        int off = seg / 4;
+
+        switch (dir) {
+            case UP:
+                g2.fillOval(cx - off - eyeSize / 2, cy - off, eyeSize, eyeSize);
+                g2.fillOval(cx + off - eyeSize / 2, cy - off, eyeSize, eyeSize);
+                break;
+            case DOWN:
+                g2.fillOval(cx - off - eyeSize / 2, cy + off - eyeSize, eyeSize, eyeSize);
+                g2.fillOval(cx + off - eyeSize / 2, cy + off - eyeSize, eyeSize, eyeSize);
+                break;
+            case LEFT:
+                g2.fillOval(cx - off, cy - off - eyeSize / 2, eyeSize, eyeSize);
+                g2.fillOval(cx - off, cy + off - eyeSize / 2, eyeSize, eyeSize);
+                break;
+            case RIGHT:
+                g2.fillOval(cx + off - eyeSize, cy - off - eyeSize / 2, eyeSize, eyeSize);
+                g2.fillOval(cx + off - eyeSize, cy + off - eyeSize / 2, eyeSize, eyeSize);
+                break;
         }
     }
 
