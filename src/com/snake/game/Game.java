@@ -215,6 +215,7 @@ public class Game {
             snake.grow();
             snake.activateBoost(FoodType.BOOST_DURATION_MS);
             player.addScore(FoodType.BOOST_POINTS);
+            checkVersusRaceWin(player);
             headCell.reset();
             board.spawnBoostFood();
             return;
@@ -231,12 +232,27 @@ public class Game {
             } else {
                 player.addScore(FoodType.NORMAL_POINTS);
             }
+            checkVersusRaceWin(player);
             if (food.getType() == FoodType.NORMAL) {
                 intervalMs = Math.max(MIN_INTERVAL_MS, intervalMs - INTERVAL_STEP_MS);
             }
             food.remove();
             food.setPosition(spawnFoodPosition());
         }
+    }
+
+    private void checkVersusRaceWin(Player player) {
+        if (gameMode != GameMode.VERSUS || settings == null) {
+            return;
+        }
+        if (player.getScore() >= settings.getScoreTarget()) {
+            resolveGameOver(player);
+        }
+    }
+
+    private void resolveGameOver(Player winnerPlayer) {
+        winner = winnerPlayer;
+        state.setPhase(GameState.Phase.GAME_OVER);
     }
 
     private void resolveGameOver(Snake s1, Snake s2) {
