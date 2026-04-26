@@ -41,4 +41,8 @@ public class Player {
         // Reset only affects score; snake reset is handled by GameFrame/Game logic.
         score = 0;
     }
+
+    public boolean isBoostActive() {
+        return snake.isBoostActive();
+    }
 }
