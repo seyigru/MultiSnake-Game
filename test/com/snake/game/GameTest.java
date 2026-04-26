@@ -268,6 +268,21 @@ public class GameTest {
         assertTrue(game.getState().isPlaying());
     }
 
+    @Test
+    void testRematchResetsScoresAndKeepsNames() {
+        DifficultySettings easy = new DifficultySettings(DifficultySettings.Level.EASY);
+        Game game = new Game(board, player1, player2, GameMode.VERSUS, easy);
+        player1.setName("Israel");
+        player2.setName("Test");
+        player1.addScore(3);
+        player2.addScore(5);
+        game.reset();
+        assertEquals(0, player1.getScore());
+        assertEquals(0, player2.getScore());
+        assertEquals("Israel", player1.getName());
+        assertEquals("Test", player2.getName());
+    }
+
     private void placeNormalFoodOneStepAheadOfP1(Game game) throws Exception {
         Field foodField = Game.class.getDeclaredField("food");
         foodField.setAccessible(true);
