@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import com.snake.model.Cell;
 import com.snake.model.CollisionDetector;
 import com.snake.model.DifficultySettings;
 import com.snake.model.Direction;
 import com.snake.model.Food;
+import com.snake.model.FoodType;
 import com.snake.model.GameBoard;
 import com.snake.model.GameMode;
 import com.snake.model.Position;
@@ -32,6 +34,8 @@ public class Game {
     private final GameMode gameMode;
     private final Random random;
     private final int startingIntervalMs;
+    // settings is null when constructed via the simpler test constructors
+    private final DifficultySettings settings;
     private Food food;
     private int intervalMs;
     private Player winner;
@@ -47,6 +51,7 @@ public class Game {
         this.food = new Food(board, spawnFoodPosition());
         this.startingIntervalMs = INITIAL_INTERVAL_MS;
         this.intervalMs = INITIAL_INTERVAL_MS;
+        this.settings = null;
         this.winner = null;
     }
 
@@ -61,6 +66,7 @@ public class Game {
         this.food = new Food(board, initialFood);
         this.startingIntervalMs = INITIAL_INTERVAL_MS;
         this.intervalMs = INITIAL_INTERVAL_MS;
+        this.settings = null;
         this.winner = null;
     }
 
@@ -75,7 +81,12 @@ public class Game {
         this.food = new Food(board, spawnFoodPosition());
         this.startingIntervalMs = settings.getSpeedMs();
         this.intervalMs = settings.getSpeedMs();
+        this.settings = settings;
         this.winner = null;
+        // VERSUS mode also gets one SPEED_BOOST food on the board at start
+        if (gameMode == GameMode.VERSUS) {
+            board.spawnBoostFood();
+        }
     }
 
     public GameState getState() {
@@ -104,6 +115,11 @@ public class Game {
 
     public GameMode getGameMode() {
         return gameMode;
+    }
+
+    // exposes the difficulty settings so the HUD can read the score target without reflection
+    public DifficultySettings getDifficultySettings() {
+        return settings;
     }
 
     public Position getFoodPosition() {
@@ -139,6 +155,10 @@ public class Game {
         player2.reset();
         board.reset();
         food.setPosition(spawnFoodPosition());
+        // re-seed the boost food after a board reset so VERSUS games always have one in play
+        if (gameMode == GameMode.VERSUS) {
+            board.spawnBoostFood();
+        }
     }
 
     public void tick() {
@@ -187,12 +207,24 @@ public class Game {
     }
 
     private void checkFood(Snake snake, Player player) {
+        // boost food sits directly on the board cell rather than inside the Food class
+        // so we look it up via Cell.getFoodType before falling through to normal food
+        Cell headCell = board.getCell(snake.getHead());
+        if (headCell.getFoodType() == FoodType.SPEED_BOOST) {
+            snake.grow();
+            snake.activateBoost(FoodType.BOOST_DURATION_MS);
+            player.addScore(FoodType.BOOST_POINTS);
+            headCell.reset();
+            board.spawnBoostFood();
+            return;
+        }
+
         if (food == null) {
             return;
         }
         if (food.isEaten(snake.getHead())) {
             snake.grow();
-            player.addScore(1);
+            player.addScore(FoodType.NORMAL_POINTS);
             intervalMs = Math.max(MIN_INTERVAL_MS, intervalMs - INTERVAL_STEP_MS);
             food.remove();
             food.setPosition(spawnFoodPosition());

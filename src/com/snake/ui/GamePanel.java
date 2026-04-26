@@ -183,17 +183,10 @@ public class GamePanel extends JPanel {
         g2.drawString(mid, (getWidth() - mw) / 2, 26);
     }
 
-    // best-effort lookup of the difficulty score target, falls back to 10 if Game does not expose it
+    // reads the difficulty score target straight from the Game, falls back to 10 if Game has no settings
     private int readScoreTarget() {
-        try {
-            java.lang.reflect.Method m = game.getClass().getMethod("getDifficultySettings");
-            Object settings = m.invoke(game);
-            if (settings instanceof DifficultySettings) {
-                return ((DifficultySettings) settings).getScoreTarget();
-            }
-        } catch (ReflectiveOperationException ignored) {
-        }
-        return 10;
+        DifficultySettings s = game.getDifficultySettings();
+        return s == null ? 10 : s.getScoreTarget();
     }
 
     private void drawGridBackground(Graphics2D g2, int n) {
