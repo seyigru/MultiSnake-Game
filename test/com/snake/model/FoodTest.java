@@ -94,4 +94,18 @@ public class FoodTest {
         multiFood.spawnAll();
         assertEquals(5, multiFood.getPositions().size());
     }
+
+    // default Food constructor should produce NORMAL type for backwards compatibility
+    @Test
+    void testGetTypeReturnsNormalForDefault() {
+        Food normalFood = new Food(board);
+        assertEquals(FoodType.NORMAL, normalFood.getType());
+    }
+
+    // overloaded constructor should keep the SPEED_BOOST type for boost food
+    @Test
+    void testGetTypeReturnsSpeedBoostForBoostFood() {
+        Food boostFood = new Food(board, 1, FoodType.SPEED_BOOST);
+        assertEquals(FoodType.SPEED_BOOST, boostFood.getType());
+    }
 }
