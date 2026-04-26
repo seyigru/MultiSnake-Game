@@ -83,10 +83,6 @@ public class Game {
         this.intervalMs = settings.getSpeedMs();
         this.settings = settings;
         this.winner = null;
-        // VERSUS mode also gets one SPEED_BOOST food on the board at start
-        if (gameMode == GameMode.VERSUS) {
-            board.spawnBoostFood();
-        }
     }
 
     public GameState getState() {
@@ -131,6 +127,12 @@ public class Game {
             return;
         }
         state.setPhase(GameState.Phase.PLAYING);
+        if (settings != null) {
+            spawnFood();
+        }
+        if (gameMode == GameMode.VERSUS) {
+            board.spawnBoostFood();
+        }
     }
 
     public void pause() {
@@ -154,8 +156,7 @@ public class Game {
         player1.reset();
         player2.reset();
         board.reset();
-        food.setPosition(spawnFoodPosition());
-        // re-seed the boost food after a board reset so VERSUS games always have one in play
+        spawnFood();
         if (gameMode == GameMode.VERSUS) {
             board.spawnBoostFood();
         }
@@ -245,6 +246,10 @@ public class Game {
             winner = player1;
         }
         state.setPhase(GameState.Phase.GAME_OVER);
+    }
+
+    private void spawnFood() {
+        food.setPosition(spawnFoodPosition());
     }
 
     private Position spawnFoodPosition() {
