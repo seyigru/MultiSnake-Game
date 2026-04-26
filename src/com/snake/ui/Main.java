@@ -103,6 +103,10 @@ public class Main {
                 GameFrame gameFrame = new GameFrame(game, leaderboard, difficultyLabel, () -> {
                     cardLayout.show(root, MAIN_MENU);
                     frame.setVisible(true);
+                }, (n1, n2) -> {
+                    nameEntryPanelHolder[0].prefillNames(n1, n2);
+                    cardLayout.show(root, NAME_ENTRY);
+                    frame.setVisible(true);
                 });
                 gameFrame.setVisible(true);
                 frame.setVisible(false);

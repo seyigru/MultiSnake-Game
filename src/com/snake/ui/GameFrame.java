@@ -6,15 +6,14 @@ package com.snake.ui;
 import java.awt.CardLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.function.BiConsumer;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.snake.game.Game;
 import com.snake.game.GameState;
-import com.snake.model.Direction;
 import com.snake.model.Leaderboard;
-import com.snake.model.Position;
 
 public class GameFrame extends JFrame {
 
@@ -28,17 +27,21 @@ public class GameFrame extends JFrame {
     private final JPanel root;
     private final Runnable onBack;
 
-    public GameFrame(Game game, Leaderboard leaderboard, String difficultyLabel, Runnable onBack) {
+    public GameFrame(Game game, Leaderboard leaderboard, String difficultyLabel, Runnable onBack,
+                     BiConsumer<String, String> onVersusNameEntry) {
         this.game = game;
         this.onBack = onBack;
         this.cardLayout = new CardLayout();
         this.root = new JPanel(cardLayout);
         this.panel = new GamePanel(game);
-        this.gameOverPanel = new GameOverPanel(game, leaderboard, difficultyLabel, () -> {
-            restartMatch();
-            cardLayout.show(root, CARD_GAME);
-            panel.repaint();
-            panel.requestFocusInWindow();
+        this.gameOverPanel = new GameOverPanel(game, leaderboard, difficultyLabel, (n1, n2) -> {
+            panel.stopTimer();
+            dispose();
+            onVersusNameEntry.accept(n1, n2);
+        }, () -> {
+            panel.stopTimer();
+            dispose();
+            onBack.run();
         });
 
         panel.setOnGameOver(() -> {
@@ -94,11 +97,7 @@ public class GameFrame extends JFrame {
             return;
         }
         if (code == KeyEvent.VK_R && phase == GameState.Phase.GAME_OVER) {
-            gameOverPanel.resetSaveFlag();
-            restartMatch();
-            cardLayout.show(root, CARD_GAME);
-            panel.repaint();
-            panel.requestFocusInWindow();
+            gameOverPanel.runRematch();
             return;
         }
         // ESC goes back to main menu from anywhere
@@ -109,13 +108,5 @@ public class GameFrame extends JFrame {
             return;
         }
         game.handleInput(code);
-    }
-
-    private void restartMatch() {
-        int size = game.getBoard().getSize();
-        game.reset();
-        game.getPlayer1().getSnake().reset(new Position(size / 4, size / 2), Direction.RIGHT);
-        game.getPlayer2().getSnake().reset(new Position(size * 3 / 4, size / 2), Direction.LEFT);
-        panel.stopTimer();
     }
 }

@@ -3,12 +3,13 @@ package com.snake.ui;
 // By Israel Kayode
 // Student Number: 3167486
 //
-// Milestone 2 — screen after GAME_OVER. Shows who won (or DRAW), both scores, and Restart.
+// Milestone 2/3 — GAME_OVER. Winner (or DRAW), final scores, Rematch (Versus -> name entry, Classic -> main menu).
 // Ekene’s Leaderboard gets the winner’s row once per round (draws are not stored).
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.function.BiConsumer;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -20,6 +21,7 @@ import javax.swing.JPanel;
 import com.snake.game.Game;
 import com.snake.game.GameState;
 import com.snake.game.Player;
+import com.snake.model.GameMode;
 import com.snake.model.Leaderboard;
 
 public class GameOverPanel extends JPanel {
@@ -28,8 +30,15 @@ public class GameOverPanel extends JPanel {
     private final Leaderboard leaderboard;
     /** Shown next to the score in Leaderboard.addEntry — same text the brief uses (e.g. "EASY"). */
     private final String difficultyLabel;
-    /** Parent uses this to flip back to MainMenu + re-seat snakes / timer. */
-    private final Runnable onRestartToMainMenu;
+    /**
+     * After VERSUS rematch: game has been reset, names are passed to pre-fill name entry
+     * by Israel.
+     */
+    private final BiConsumer<String, String> onVersusRematch;
+    /**
+     * After CLASSIC rematch/exit: return to the main app frame on the main menu card.
+     */
+    private final Runnable onClassicToMainMenu;
 
     private final JLabel headline;
     private final JLabel player1ScoreLabel;
@@ -39,11 +48,13 @@ public class GameOverPanel extends JPanel {
     private boolean leaderboardSavedThisRound;
 
     public GameOverPanel(Game game, Leaderboard leaderboard, String difficultyLabel,
-                         Runnable onRestartToMainMenu) {
+                         BiConsumer<String, String> onVersusRematch,
+                         Runnable onClassicToMainMenu) {
         this.game = game;
         this.leaderboard = leaderboard;
         this.difficultyLabel = difficultyLabel;
-        this.onRestartToMainMenu = onRestartToMainMenu;
+        this.onVersusRematch = onVersusRematch;
+        this.onClassicToMainMenu = onClassicToMainMenu;
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.BLACK);
@@ -72,11 +83,11 @@ public class GameOverPanel extends JPanel {
         add(player2ScoreLabel);
         add(Box.createVerticalGlue());
 
-        JButton restart = new JButton("Restart");
-        restart.setAlignmentX(CENTER_ALIGNMENT);
-        restart.setFont(new Font("Arial", Font.PLAIN, 18));
-        restart.addActionListener(e -> onRestartClicked());
-        add(restart);
+        JButton rematch = new JButton("Rematch");
+        rematch.setAlignmentX(CENTER_ALIGNMENT);
+        rematch.setFont(new Font("Arial", Font.PLAIN, 18));
+        rematch.addActionListener(e -> onRematchClicked());
+        add(rematch);
     }
 
     /**
@@ -92,11 +103,14 @@ public class GameOverPanel extends JPanel {
         if (winner == null) {
             headline.setText("DRAW");
         } else {
+            // getName() is wired to com.snake.model.Score#getName 
             headline.setText(winner.getName());
         }
 
-        player1ScoreLabel.setText("Player 1 — " + game.getPlayer1().getScore() + " pts");
-        player2ScoreLabel.setText("Player 2 — " + game.getPlayer2().getScore() + " pts");
+        Player p1 = game.getPlayer1();
+        Player p2 = game.getPlayer2();
+        player1ScoreLabel.setText(p1.getName() + " — " + p1.getScore() + " pts");
+        player2ScoreLabel.setText(p2.getName() + " — " + p2.getScore() + " pts");
 
         saveScoresIfNeeded();
     }
@@ -121,11 +135,23 @@ public class GameOverPanel extends JPanel {
         leaderboardSavedThisRound = false;
     }
 
-    private void onRestartClicked() {
-        // Save first so we never lose the row if reset cleared scores before addEntry.
+    /**
+     * Rematch: Versus pre-fills names (Score-backed) and goes to name entry; Classic returns to main menu.
+     */
+    public void runRematch() {
+        onRematchClicked();
+    }
+
+    private void onRematchClicked() {
         saveScoresIfNeeded();
-        game.reset();
-        leaderboardSavedThisRound = false;
-        onRestartToMainMenu.run();
+        if (game.getGameMode() == GameMode.VERSUS) {
+            String n1 = game.getPlayer1().getName();
+            String n2 = game.getPlayer2().getName();
+            game.reset();
+            leaderboardSavedThisRound = false;
+            onVersusRematch.accept(n1, n2);
+        } else {
+            onClassicToMainMenu.run();
+        }
     }
 }
