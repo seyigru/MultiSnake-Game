@@ -63,7 +63,23 @@ public class GameBoard {
     // places exactly one SPEED_BOOST food cell on the board
     // called once at game start in VERSUS mode alongside spawnFood
     public void spawnBoostFood() {
-        // stub - returns without placing food, implementation comes in next commit
+        // first clear any existing boost food so we never have more than one at a time
+        for (int x = 0; x < size; x++) {
+            for (int y = 0; y < size; y++) {
+                Cell c = grid[x][y];
+                if (c.getFoodType() == FoodType.SPEED_BOOST) {
+                    c.reset();
+                }
+            }
+        }
+
+        // pick a random empty cell and mark it as SPEED_BOOST food
+        List<Position> empty = getEmptyCells();
+        if (empty.isEmpty()) return;
+        Position pos = empty.get(random.nextInt(empty.size()));
+        Cell cell = grid[pos.getX()][pos.getY()];
+        cell.setState(CellState.FOOD);
+        cell.setFoodType(FoodType.SPEED_BOOST);
     }
 
     // wipes everything back to empty, works for all board sizes
