@@ -225,8 +225,15 @@ public class Game {
         }
         if (food.isEaten(snake.getHead())) {
             snake.grow();
-            player.addScore(FoodType.NORMAL_POINTS);
-            intervalMs = Math.max(MIN_INTERVAL_MS, intervalMs - INTERVAL_STEP_MS);
+            if (food.getType() == FoodType.SPEED_BOOST) {
+                player.addScore(FoodType.BOOST_POINTS);
+                snake.activateBoost(FoodType.BOOST_DURATION_MS);
+            } else {
+                player.addScore(FoodType.NORMAL_POINTS);
+            }
+            if (food.getType() == FoodType.NORMAL) {
+                intervalMs = Math.max(MIN_INTERVAL_MS, intervalMs - INTERVAL_STEP_MS);
+            }
             food.remove();
             food.setPosition(spawnFoodPosition());
         }
