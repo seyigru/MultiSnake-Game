@@ -2,6 +2,9 @@ package com.snake.ui;
 
 // By Israel Kayode
 // Student Number: 3167486
+
+// Updated by Ekene Ochuba (3155904) — Milestone 3: session highlight, restyled table
+
 //
 // Milestone 2 - leaderboard screen opened from the main menu.
 // Milestone 3 - highlight the current session row and always show a Back button.

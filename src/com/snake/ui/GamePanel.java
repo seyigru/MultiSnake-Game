@@ -56,7 +56,7 @@ public class GamePanel extends JPanel {
     private Timer timer;
     private Runnable onGameOver;
 
-    // increments every repaint, drives the boosted snake shimmer independently of game speed
+    // increments every repaint, drives the boosted snake shimmer independently of game speed - Ekene, 3155904
     private int animationTick = 0;
 
     public GamePanel(Game game) {
@@ -69,7 +69,7 @@ public class GamePanel extends JPanel {
         this.onGameOver = onGameOver;
     }
 
-    /** Width/height of the grid in cells — matches Person 1 {@code GameBoard} size (20 / 30 / 40). */
+    /** Width/height of the grid in cells — matches Ekene's {@code GameBoard} size (20 / 30 / 40). */
     private int gridCells() {
         return game.getBoard().getSize();
     }
@@ -151,7 +151,7 @@ public class GamePanel extends JPanel {
         g2.dispose();
     }
 
-    // top strip showing player names, live scores, and the score target for this difficulty
+    // top strip showing player names, live scores, and the score target for this difficulty  - Ekene, 3155904
     private void drawHud(Graphics2D g2) {
         g2.setColor(HUD_BACKGROUND);
         g2.fillRect(0, 0, getWidth(), HUD_HEIGHT);
@@ -211,7 +211,7 @@ public class GamePanel extends JPanel {
         }
     }
 
-    // Draws the snake. When the snake is boosted, each segment shimmers in sequence
+    // Draws the snake. When the snake is boosted, each segment shimmers in sequence - Ekene, 3155904
     // using a sine wave on animationTick, and the head eyes glow yellow-orange.
     private void drawSnake(Graphics2D g2, Snake snake, Color headColor, Color bodyColor, int n) {
         if (!snake.isAlive()) {
@@ -280,7 +280,7 @@ public class GamePanel extends JPanel {
         }
     }
 
-    // walks every cell on the board and draws food based on its FoodType
+    // walks every cell on the board and draws food based on its FoodType  - Ekene, 3155904
     // SPEED_BOOST cells get an animated halo behind a yellow fill, NORMAL stays red
     private void drawFood(Graphics2D g2, int n) {
         for (int x = 0; x < n; x++) {
@@ -303,7 +303,7 @@ public class GamePanel extends JPanel {
         }
     }
 
-    // draws a pulsing halo ring around boost food using AlphaComposite for transparency
+    // draws a pulsing halo ring around boost food using AlphaComposite for transparency  - Ekene, 3155904
     private void drawBoostFoodGlow(Graphics2D g2, int px, int py) {
         java.awt.Composite original = g2.getComposite();
         // pulse alpha between roughly 0.2 and 0.6 using the animation tick
