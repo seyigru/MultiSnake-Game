@@ -72,12 +72,12 @@ We kept the rules out of the Swing code on purpose. `model` and `game` know noth
 - `DifficultySettings`, `Direction`, `Score` and the `GameMode`, `FoodType` and `PlayerType` enums
 - The name entry screen, plus most of `Main`, which wires the screens together
 
-**Ekene Ochuba**
+**Ekene Ochuba** ([@Ochuba Ekene](https://github.com/OchubaEkene))
 - `GameBoard`, `Cell`, `Position` and `Food`
 - `Leaderboard`, including saving to and loading from CSV
 - The main menu, and parts of the game and leaderboard screens
 
-**Israel Kayode**
+**Israel Kayode** ([@Israel](https://github.com/EaziIsrael1))
 - `Game`, the engine that runs each tick
 - `GameState` and `Player`
 - The difficulty, game and game over screens
